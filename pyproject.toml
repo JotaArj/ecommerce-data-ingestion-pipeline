@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scraper-engine"
+version = "0.1.0"
+description = "Modular multi-source scraping engine using Playwright"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Jacinto Arjona Garrido" }
+]
+dependencies = [
+    "loguru==0.7.2",
+    "playwright==1.43.0",
+    "pydantic==2.7.1",
+    "python-dotenv==1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==24.4.2",
+    "isort==5.13.2",
+    "mypy==1.10.0",
+    "pytest==8.2.0",
+    "ruff==0.4.4",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ------------------------------------------------------------------------------
+# Pytest
+# ------------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-ra -q"
+
+# ------------------------------------------------------------------------------
+# Mypy
+# ------------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.11"
+
+# CLAVE: esto hace que mypy entienda el src layout
+mypy_path = "src"
+
+# calidad de tipado (puedes relajar luego si molesta)
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+# IMPORTANTE para no volverte loco con libs externas
+ignore_missing_imports = true
+
+# ------------------------------------------------------------------------------
+# Ruff (lint rapido y moderno)
+# ------------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "TID"]
+ignore = []
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"src.scraper_engine".msg = "Importa desde 'scraper_engine', no desde 'src.scraper_engine'."
+
+# ------------------------------------------------------------------------------
+# Black (formateo)
+# ------------------------------------------------------------------------------
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+# ------------------------------------------------------------------------------
+# isort (imports)
+# ------------------------------------------------------------------------------
+
+[tool.isort]
+profile = "black"
+line_length = 88

@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run app.main",
+      "type": "python",
+      "request": "launch",
+      "module": "scraper_engine.app.main",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true
+    },
+    {
+      "name": "Run app.init_db",
+      "type": "python",
+      "request": "launch",
+      "module": "scraper_engine.app.init_db",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true
+    },
+    {
+      "name": "Pytest",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "tests"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    }
+  ]
+}
