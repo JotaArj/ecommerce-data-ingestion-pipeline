@@ -4,7 +4,6 @@ from pathlib import Path
 
 from scraper_engine.domain.enums import SourceSite
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 SRC_DIR = PROJECT_ROOT / "src"
@@ -72,3 +71,6 @@ DEFAULT_LOG_LEVEL = "INFO"
 
 DEFAULT_TAKE_SCREENSHOT_ON_ERROR = True
 DEFAULT_SAVE_HTML_ON_ERROR = True
+
+OXYLABS_CATEGORY_START_PATH = "/products/category/"
+OXILABS_URL_CATEGORY_PREFIX = "https://oxylabs.io/products/category/"

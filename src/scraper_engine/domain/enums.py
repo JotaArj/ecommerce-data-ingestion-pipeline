@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class SourceSite(str, Enum):
+class SourceSite(StrEnum):
 
     OXYLABS_SANDBOX = "oxylabs_sandbox"
     WEBSCRAPER_ECOMMERCE_AJAX = "webscraper_ecommerce_ajax"
 
 
-class RunType(str, Enum):
+class RunType(StrEnum):
 
     CATALOG = "catalog"
     ENRICHMENT = "enrichment"
     SNAPSHOT = "snapshot"
 
 
-class RunStatus(str, Enum):
+class RunStatus(StrEnum):
 
     PENDING = "pending"
     RUNNING = "running"
@@ -24,14 +24,14 @@ class RunStatus(str, Enum):
     FAILED = "failed"
 
 
-class Currency(str, Enum):
+class Currency(StrEnum):
 
     EUR = "EUR"
     USD = "USD"
     UNKNOWN = "UNKNOWN"
 
 
-class StockStatus(str, Enum):
+class StockStatus(StrEnum):
 
     IN_STOCK = "in_stock"
     OUT_OF_STOCK = "out_of_stock"

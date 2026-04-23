@@ -12,12 +12,14 @@
   ],
   "python.testing.cwd": "${workspaceFolder}",
   "editor.formatOnSave": true,
+  "editor.inlineSuggest.enabled": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit",
     "source.fixAll": "explicit"
   },
+  "github.copilot.nextEditSuggestions.enabled": false,
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "ms-python.python"
   },
   "ruff.importStrategy": "fromEnvironment",
   "ruff.organizeImports": true,
