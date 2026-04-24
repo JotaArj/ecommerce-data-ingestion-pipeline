@@ -92,3 +92,6 @@ CREATE INDEX IF NOT EXISTS idx_product_snapshots_run_id
 
 CREATE INDEX IF NOT EXISTS idx_product_snapshots_observed_at
     ON product_snapshots(observed_at);
+
+CREATE INDEX IF NOT EXISTS idx_product_snapshots_product_observed_at
+    ON product_snapshots(source_product_id, observed_at);
