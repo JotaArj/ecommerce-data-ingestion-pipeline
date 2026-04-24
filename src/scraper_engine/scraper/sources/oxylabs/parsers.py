@@ -34,14 +34,15 @@ class Parsers:
             subcategory_url_split = subcategory_url.split("/")
             subcategory = subcategory_url_split[-1]
             parent = subcategory_url_split[0]
+            parent_id = f"{SourceSite.OXYLABS_SANDBOX.value}:{parent}"
             category_node = CategoryNode (
                 id= f"{SourceSite.OXYLABS_SANDBOX.value}:{subcategory_url}",
                 source_site=SourceSite.OXYLABS_SANDBOX,
-                source_category_code=f"{SourceSite.OXYLABS_SANDBOX.value}:{parent}",
+                source_category_code=subcategory_url,
                 name=subcategory,
                 url=OXILABS_URL_CATEGORY_PREFIX + subcategory_url,
                 path=subcategory_url,
-                parent_id=parent,
+                parent_id=parent_id,
                 level=2,
                 is_leaf= True,
                 created_at=datetime.now(),
