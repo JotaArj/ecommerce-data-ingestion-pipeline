@@ -23,6 +23,7 @@ class Parsers:
         "3ds": "nintendo/3ds",
         "dreamcast": "dreamcast",
         "ds": "nintendo/ds",
+        "game-boy-advance": "nintendo/game-boy-advance",
         "game boy advance": "nintendo/game-boy-advance",
         "gamecube": "nintendo/gamecube",
         "nintendo": "nintendo",
@@ -126,7 +127,7 @@ class Parsers:
         if not isinstance(product_list, list):
             return products, product_snapshots, product_category_links
 
-        price_texts = page.locator(f"{PRICE_SELECTOR} .price").all_inner_texts()
+        price_texts = page.locator(PRICE_SELECTOR).all_inner_texts()
         for index, data_product in enumerate(product_list):
             if not isinstance(data_product, dict):
                 continue
@@ -230,6 +231,12 @@ class Parsers:
 
     @staticmethod
     def _parse_genre(value: object) -> list[str] | None:
+        if isinstance(value, str):
+            try:
+                value = ast.literal_eval(value)
+            except (SyntaxError, ValueError):
+                value = [value]
+
         if not isinstance(value, list):
             return None
 

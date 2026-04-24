@@ -57,8 +57,8 @@ class ProductSnapshot:
     run_id: str
     observed_at: datetime
     current_price: Decimal | None
-    original_price: Decimal | None # como encontrar?
-    currency: Currency #capturar con el texto
+    original_price: Decimal | None
+    currency: Currency
     stock_status: StockStatus
     meta_score: Decimal | None = None
     user_score: Decimal | None = None
