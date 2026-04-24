@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import sqlite3
 import json
+import sqlite3
 from datetime import datetime
 from decimal import Decimal
 
@@ -75,7 +75,7 @@ class ProductRepository:
                 source_site,
                 source_product_code,
                 name,
-                type,
+                product_type,
                 rating,
                 pdp_url,
                 developer,
@@ -89,7 +89,7 @@ class ProductRepository:
                 source_site = excluded.source_site,
                 source_product_code = excluded.source_product_code,
                 name = excluded.name,
-                type = excluded.type,
+                product_type = excluded.product_type,
                 rating = excluded.rating,
                 pdp_url = excluded.pdp_url,
                 developer = excluded.developer,
@@ -102,7 +102,7 @@ class ProductRepository:
                 product.source_site.value,
                 product.source_product_code,
                 product.name,
-                product.type,
+                product.product_type,
                 product.rating,
                 product.pdp_url,
                 product.developer,
@@ -172,17 +172,14 @@ class ProductCategoryRepository:
             INSERT INTO product_categories (
                 source_product_id,
                 category_id,
-                parent_category_id,
                 created_at
             )
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(source_product_id, category_id) DO UPDATE SET
-                parent_category_id = excluded.parent_category_id
+            VALUES (?, ?, ?)
+            ON CONFLICT(source_product_id, category_id) DO NOTHING
             """,
             (
                 link.source_product_id,
                 link.category_id,
-                link.parent_category_id,
                 _dt(link.created_at),
             ),
         )

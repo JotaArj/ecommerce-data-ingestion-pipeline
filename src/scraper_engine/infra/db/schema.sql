@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS products (
     source_site TEXT NOT NULL,
     source_product_code TEXT NOT NULL,
     name TEXT NOT NULL,
-    type TEXT,
+    product_type TEXT,
     rating TEXT,
     pdp_url TEXT NOT NULL,
     developer TEXT,
@@ -47,12 +47,10 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS product_categories (
     source_product_id TEXT NOT NULL,
     category_id TEXT NOT NULL,
-    parent_category_id TEXT NOT NULL,
     created_at TEXT NOT NULL,
     PRIMARY KEY (source_product_id, category_id),
     FOREIGN KEY (source_product_id) REFERENCES products(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id),
-    FOREIGN KEY (parent_category_id) REFERENCES categories(id)
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE IF NOT EXISTS product_snapshots (

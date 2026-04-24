@@ -19,7 +19,7 @@ class Product:
     source_site: SourceSite
     source_product_code: str
     name: str
-    type: str | None
+    product_type: str | None
     rating: str | None
     pdp_url: str
     developer: str | None

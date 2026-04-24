@@ -1,13 +1,12 @@
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-import sqlite3
 from time import time
 
 from scraper_engine.core.settings import Settings
-
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 
@@ -73,9 +72,19 @@ class SQLiteDatabase:
         if self._table_exists(connection, "source_products"):
             return True
 
+        if (
+            self._table_exists(connection, "product_categories")
+            and "parent_category_id"
+            in self._table_columns(connection, "product_categories")
+        ):
+            return True
+
         return (
             self._table_exists(connection, "products")
-            and "source_site" not in self._table_columns(connection, "products")
+            and (
+                "source_site" not in self._table_columns(connection, "products")
+                or "type" in self._table_columns(connection, "products")
+            )
         )
 
     def _table_exists(self, connection: sqlite3.Connection, table_name: str) -> bool:

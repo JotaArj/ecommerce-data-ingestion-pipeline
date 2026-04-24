@@ -56,8 +56,10 @@ class Discovery:
             return []
 
         return [href for href in hrefs if isinstance(href, str)]
-    
-    def discover_products(page : Page, json: dict[str, object]) -> tuple[list[Product], 
-                                               list[ProductSnapshot], 
-                                               list[ProductCategoryLink]]:
-        return Parsers.parse_products(page, json)
+
+    def discover_products(self, 
+                          json: dict[str, object], 
+                          run_id: str) -> tuple[list[Product], 
+                                                list[ProductSnapshot], 
+                                                list[ProductCategoryLink]]:
+        return Parsers.parse_products(self._page, json, run_id)
