@@ -12,24 +12,17 @@ CREATE TABLE IF NOT EXISTS runs (
 
 CREATE TABLE IF NOT EXISTS products (
     id TEXT PRIMARY KEY,
-    canonical_code TEXT UNIQUE,
-    canonical_name TEXT,
-    brand TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS source_products (
-    id TEXT PRIMARY KEY,
-    product_id TEXT,
     source_site TEXT NOT NULL,
     source_product_code TEXT NOT NULL,
     name TEXT NOT NULL,
+    type TEXT,
+    rating TEXT,
     pdp_url TEXT NOT NULL,
-    brand TEXT,
+    developer TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES products(id),
+    genre TEXT,
+    description TEXT,
     UNIQUE (source_site, source_product_code),
     UNIQUE (source_site, pdp_url)
 );
@@ -54,11 +47,12 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS product_categories (
     source_product_id TEXT NOT NULL,
     category_id TEXT NOT NULL,
-    is_primary INTEGER NOT NULL DEFAULT 0,
+    parent_category_id TEXT NOT NULL,
     created_at TEXT NOT NULL,
     PRIMARY KEY (source_product_id, category_id),
-    FOREIGN KEY (source_product_id) REFERENCES source_products(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id)
+    FOREIGN KEY (source_product_id) REFERENCES products(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (parent_category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE IF NOT EXISTS product_snapshots (
@@ -70,23 +64,18 @@ CREATE TABLE IF NOT EXISTS product_snapshots (
     original_price NUMERIC,
     currency TEXT NOT NULL,
     stock_status TEXT NOT NULL,
-    rating NUMERIC,
-    review_count INTEGER,
-    image_url TEXT,
-    description TEXT,
+    meta_score NUMERIC,
+    user_score NUMERIC,
     created_at TEXT NOT NULL,
-    FOREIGN KEY (source_product_id) REFERENCES source_products(id),
+    FOREIGN KEY (source_product_id) REFERENCES products(id),
     FOREIGN KEY (run_id) REFERENCES runs(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_runs_source_site
     ON runs(source_site);
 
-CREATE INDEX IF NOT EXISTS idx_source_products_product_id
-    ON source_products(product_id);
-
-CREATE INDEX IF NOT EXISTS idx_source_products_source_site
-    ON source_products(source_site);
+CREATE INDEX IF NOT EXISTS idx_products_source_site
+    ON products(source_site);
 
 CREATE INDEX IF NOT EXISTS idx_categories_source_site
     ON categories(source_site);

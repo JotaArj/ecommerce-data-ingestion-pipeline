@@ -19,4 +19,6 @@ class Scraper:
             for i in range(1, count):
                 dropdown_menu_categories.nth(i).click()
 
+    def navigate_products_pages(self, previus_page: int) -> None:
+        pass
 

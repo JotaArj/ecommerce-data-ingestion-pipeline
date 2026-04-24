@@ -1,7 +1,13 @@
+
 from playwright.sync_api import Page
 
 from scraper_engine.core.constants import OXYLABS_CATEGORY_START_PATH
-from scraper_engine.domain.models import CategoryNode
+from scraper_engine.domain.models import (
+    CategoryNode,
+    Product,
+    ProductCategoryLink,
+    ProductSnapshot,
+)
 from scraper_engine.scraper.sources.oxylabs.parsers import Parsers
 from scraper_engine.scraper.sources.oxylabs.selectors import (
     CATEGORY_LINKS,
@@ -50,3 +56,8 @@ class Discovery:
             return []
 
         return [href for href in hrefs if isinstance(href, str)]
+    
+    def discover_products(page : Page, json: dict[str, object]) -> tuple[list[Product], 
+                                               list[ProductSnapshot], 
+                                               list[ProductCategoryLink]]:
+        return Parsers.parse_products(page, json)

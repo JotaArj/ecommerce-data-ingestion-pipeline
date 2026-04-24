@@ -74,3 +74,5 @@ DEFAULT_SAVE_HTML_ON_ERROR = True
 
 OXYLABS_CATEGORY_START_PATH = "/products/category/"
 OXILABS_URL_CATEGORY_PREFIX = "https://oxylabs.io/products/category/"
+
+DEFAULT_SCRAP_URL = "https://sandbox.oxylabs.io/products?page="

@@ -16,24 +16,17 @@ from scraper_engine.domain.enums import (
 @dataclass(slots=True)
 class Product:
     id: str
-    canonical_code: str | None
-    canonical_name: str | None
-    brand: str | None
-    created_at: datetime
-    updated_at: datetime
-
-
-@dataclass(slots=True)
-class SourceProduct:
-    id: str
-    product_id: str | None
     source_site: SourceSite
     source_product_code: str
     name: str
+    type: str | None
+    rating: str | None
     pdp_url: str
-    brand: str | None
+    developer: str | None
     created_at: datetime
     updated_at: datetime
+    genre: list[str] | None
+    description: str | None = None
 
 
 @dataclass(slots=True)
@@ -53,9 +46,8 @@ class CategoryNode:
 
 @dataclass(slots=True)
 class ProductCategoryLink:
-    source_product_id: str
+    source_product_id: str 
     category_id: str
-    is_primary: bool
     created_at: datetime
 
 
@@ -65,13 +57,11 @@ class ProductSnapshot:
     run_id: str
     observed_at: datetime
     current_price: Decimal | None
-    original_price: Decimal | None
-    currency: Currency
+    original_price: Decimal | None # como encontrar?
+    currency: Currency #capturar con el texto
     stock_status: StockStatus
-    rating: Decimal | None = None
-    review_count: int | None = None
-    image_url: str | None = None
-    description: str | None = None
+    meta_score: Decimal | None = None
+    user_score: Decimal | None = None
     created_at: datetime | None = None
 
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+import json
 from datetime import datetime
 from decimal import Decimal
 
@@ -10,7 +11,6 @@ from scraper_engine.domain.models import (
     ProductCategoryLink,
     ProductSnapshot,
     ScraperRun,
-    SourceProduct,
 )
 
 
@@ -72,68 +72,44 @@ class ProductRepository:
             """
             INSERT INTO products (
                 id,
-                canonical_code,
-                canonical_name,
-                brand,
-                created_at,
-                updated_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET
-                canonical_code = excluded.canonical_code,
-                canonical_name = excluded.canonical_name,
-                brand = excluded.brand,
-                updated_at = excluded.updated_at
-            """,
-            (
-                product.id,
-                product.canonical_code,
-                product.canonical_name,
-                product.brand,
-                _dt(product.created_at),
-                _dt(product.updated_at),
-            ),
-        )
-
-
-class SourceProductRepository:
-    def __init__(self, connection: sqlite3.Connection) -> None:
-        self._connection = connection
-
-    def upsert(self, source_product: SourceProduct) -> None:
-        self._connection.execute(
-            """
-            INSERT INTO source_products (
-                id,
-                product_id,
                 source_site,
                 source_product_code,
                 name,
+                type,
+                rating,
                 pdp_url,
-                brand,
+                developer,
                 created_at,
-                updated_at
+                updated_at,
+                genre,
+                description
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
-                product_id = excluded.product_id,
                 source_site = excluded.source_site,
                 source_product_code = excluded.source_product_code,
                 name = excluded.name,
+                type = excluded.type,
+                rating = excluded.rating,
                 pdp_url = excluded.pdp_url,
-                brand = excluded.brand,
-                updated_at = excluded.updated_at
+                developer = excluded.developer,
+                updated_at = excluded.updated_at,
+                genre = excluded.genre,
+                description = excluded.description
             """,
             (
-                source_product.id,
-                source_product.product_id,
-                source_product.source_site.value,
-                source_product.source_product_code,
-                source_product.name,
-                source_product.pdp_url,
-                source_product.brand,
-                _dt(source_product.created_at),
-                _dt(source_product.updated_at),
+                product.id,
+                product.source_site.value,
+                product.source_product_code,
+                product.name,
+                product.type,
+                product.rating,
+                product.pdp_url,
+                product.developer,
+                _dt(product.created_at),
+                _dt(product.updated_at),
+                json.dumps(product.genre) if product.genre is not None else None,
+                product.description,
             ),
         )
 
@@ -196,17 +172,17 @@ class ProductCategoryRepository:
             INSERT INTO product_categories (
                 source_product_id,
                 category_id,
-                is_primary,
+                parent_category_id,
                 created_at
             )
             VALUES (?, ?, ?, ?)
             ON CONFLICT(source_product_id, category_id) DO UPDATE SET
-                is_primary = excluded.is_primary
+                parent_category_id = excluded.parent_category_id
             """,
             (
                 link.source_product_id,
                 link.category_id,
-                _bool_to_int(link.is_primary),
+                link.parent_category_id,
                 _dt(link.created_at),
             ),
         )
@@ -229,13 +205,11 @@ class ProductSnapshotRepository:
                 original_price,
                 currency,
                 stock_status,
-                rating,
-                review_count,
-                image_url,
-                description,
+                meta_score,
+                user_score,
                 created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 snapshot.source_product_id,
@@ -245,10 +219,8 @@ class ProductSnapshotRepository:
                 _decimal_to_str(snapshot.original_price),
                 snapshot.currency.value,
                 snapshot.stock_status.value,
-                _decimal_to_str(snapshot.rating),
-                snapshot.review_count,
-                snapshot.image_url,
-                snapshot.description,
+                _decimal_to_str(snapshot.meta_score),
+                _decimal_to_str(snapshot.user_score),
                 _dt(created_at),
             ),
         )
