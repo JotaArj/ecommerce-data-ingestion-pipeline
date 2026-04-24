@@ -61,7 +61,6 @@ class RunRepository:
                 run.error_message,
             ),
         )
-        self._connection.commit()
 
 
 class ProductRepository:
@@ -95,7 +94,6 @@ class ProductRepository:
                 _dt(product.updated_at),
             ),
         )
-        self._connection.commit()
 
 
 class SourceProductRepository:
@@ -138,7 +136,6 @@ class SourceProductRepository:
                 _dt(source_product.updated_at),
             ),
         )
-        self._connection.commit()
 
 
 class CategoryRepository:
@@ -187,7 +184,6 @@ class CategoryRepository:
                 _dt(category.updated_at),
             ),
         )
-        self._connection.commit()
 
 
 class ProductCategoryRepository:
@@ -214,7 +210,6 @@ class ProductCategoryRepository:
                 _dt(link.created_at),
             ),
         )
-        self._connection.commit()
 
 
 class ProductSnapshotRepository:
@@ -257,4 +252,3 @@ class ProductSnapshotRepository:
                 _dt(created_at),
             ),
         )
-        self._connection.commit()
