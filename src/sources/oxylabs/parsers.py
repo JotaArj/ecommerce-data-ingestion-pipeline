@@ -7,15 +7,15 @@ from decimal import Decimal, InvalidOperation
 
 from playwright.sync_api import Page
 
-from scraper_engine.core.constants import OXILABS_URL_CATEGORY_PREFIX
-from scraper_engine.domain.enums import Currency, SourceSite, StockStatus
-from scraper_engine.domain.models import (
+from scraper_engine.config.constants import OXILABS_URL_CATEGORY_PREFIX
+from domain.enums import Currency, SourceSite, StockStatus
+from domain.models import (
     CategoryNode,
     Product,
     ProductCategoryLink,
     ProductSnapshot,
 )
-from scraper_engine.scraper.sources.oxylabs.selectors import PRICE_SELECTOR
+from scraper_engine.sources.oxylabs.selectors import PRICE_SELECTOR
 
 
 class Parsers:
@@ -113,7 +113,7 @@ class Parsers:
 
     @staticmethod
     def parse_products(
-        page: Page, json: dict[str, object], run_id: str
+        page: Page, json: dict[str,dict], run_id: str
     ) -> tuple[list[Product], list[ProductSnapshot], list[ProductCategoryLink]]:
         products: list[Product] = []
         product_snapshots: list[ProductSnapshot] = []

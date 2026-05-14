@@ -11,7 +11,7 @@ from playwright.sync_api import (
     sync_playwright,
 )
 
-from scraper_engine.core.settings import Settings
+from config.settings import Settings
 
 
 class PlaywrightFactory:

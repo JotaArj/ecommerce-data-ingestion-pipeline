@@ -8,27 +8,27 @@ from uuid import uuid4
 
 from playwright.sync_api import Page
 
-from scraper_engine.core.settings import Settings
-from scraper_engine.domain.enums import RunStatus, RunType, SourceSite
-from scraper_engine.domain.models import (
+from config.settings import Settings
+from domain.enums import RunStatus, RunType, SourceSite
+from domain.models import (
     CategoryNode,
     Product,
     ProductCategoryLink,
     ProductSnapshot,
     ScraperRun,
 )
-from scraper_engine.infra.browser.playwright_factory import PlaywrightFactory
-from scraper_engine.infra.db.repositories import (
+from browser.playwright_factory import PlaywrightFactory
+from scraper_engine.db.repositories import (
     CategoryRepository,
     ProductCategoryRepository,
     ProductRepository,
     ProductSnapshotRepository,
     RunRepository,
 )
-from scraper_engine.infra.db.sqlite import SQLiteDatabase, build_database
-from scraper_engine.scraper.sources.oxylabs.discovery import Discovery
-from scraper_engine.scraper.sources.oxylabs.scraper import Scraper
-from scraper_engine.scraper.sources.oxylabs.selectors import PRICE_SELECTOR
+from db.sqlite import SQLiteDatabase, build_database
+from sources.oxylabs.discovery import Discovery
+from sources.oxylabs.scraper import Scraper
+from scraper_engine.sources.oxylabs.selectors import PRICE_SELECTOR
 
 logger = logging.getLogger(__name__)
 

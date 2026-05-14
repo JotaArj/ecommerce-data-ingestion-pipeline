@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
-from scraper_engine.domain.enums import (
+from domain.enums import (
     Currency,
     RunStatus,
     RunType,

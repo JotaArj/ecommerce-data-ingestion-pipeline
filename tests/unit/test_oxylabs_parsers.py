@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from scraper_engine.domain.enums import Currency
-from scraper_engine.scraper.sources.oxylabs.parsers import Parsers
-from scraper_engine.scraper.sources.oxylabs.selectors import PRICE_SELECTOR
+from domain.enums import Currency
+from sources.oxylabs.parsers import Parsers
+from scraper_engine.sources.oxylabs.selectors import PRICE_SELECTOR
 
 
 class _FakeLocator:

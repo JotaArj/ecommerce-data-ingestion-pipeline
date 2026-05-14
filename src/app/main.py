@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from scraper_engine.application.run_catalog import run_catalog
-from scraper_engine.core.settings import load_settings
+from application.run_catalog import run_catalog
+from config.settings import load_settings
 
 
 def main() -> None:

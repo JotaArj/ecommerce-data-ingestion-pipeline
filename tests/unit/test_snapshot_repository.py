@@ -5,15 +5,15 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
-from scraper_engine.domain.enums import (
+from domain.enums import (
     Currency,
     RunStatus,
     RunType,
     SourceSite,
     StockStatus,
 )
-from scraper_engine.domain.models import Product, ProductSnapshot, ScraperRun
-from scraper_engine.infra.db.repositories import (
+from domain.models import Product, ProductSnapshot, ScraperRun
+from scraper_engine.db.repositories import (
     ProductRepository,
     ProductSnapshotRepository,
     RunRepository,

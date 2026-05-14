@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from scraper_engine.core.constants import PROJECT_ROOT
-from scraper_engine.core.settings import load_settings
-from scraper_engine.infra.db.sqlite import build_database
+from scraper_engine.config.constants import PROJECT_ROOT
+from config.settings import load_settings
+from db.sqlite import build_database
 
 
 def main() -> None:

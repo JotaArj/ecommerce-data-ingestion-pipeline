@@ -6,7 +6,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from scraper_engine.core.constants import (
+from scraper_engine.config.constants import (
     DEFAULT_BASE_URL,
     DEFAULT_DB_PATH,
     DEFAULT_HEADLESS,
@@ -14,7 +14,7 @@ from scraper_engine.core.constants import (
     DEFAULT_LOG_LEVEL,
     DEFAULT_SCRAP_URL,
 )
-from scraper_engine.domain.enums import SourceSite
+from domain.enums import SourceSite
 
 load_dotenv()
 
