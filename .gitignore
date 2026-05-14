@@ -33,6 +33,8 @@ dist/
 artifacts/
 data/
 logs/
+output/
+test/
 
 # OS files
 .DS_Store
