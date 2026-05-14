@@ -6,7 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from ecommerce_ingestion.config.constants import (
-    DB_OUTPUT_DIR,
+    DB_OUTPUT_BRONZE,
     DEFAULT_BASE_URL,
     DEFAULT_HEADLESS,
     DEFAULT_LOG_LEVEL,
@@ -59,7 +59,7 @@ def load_settings() -> Settings:
         headless=_get_bool(os.getenv("HEADLESS"), DEFAULT_HEADLESS),
         db_path=_get_path(
             os.getenv("DB_PATH"),
-            DB_OUTPUT_DIR / f"{source_name}_scraper.db",
+            DB_OUTPUT_BRONZE / f"{source_name}_scraper.db",
         ),
         log_level=os.getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL),
         log_file_path=_get_path(

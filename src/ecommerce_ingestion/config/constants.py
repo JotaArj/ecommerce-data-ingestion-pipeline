@@ -5,6 +5,11 @@ from ecommerce_ingestion.domain.enums import SourceSite
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 DB_OUTPUT_DIR = PROJECT_ROOT / "output"
+DB_OUTPUT_BRONZE = DB_OUTPUT_DIR / "bronze"
+DB_OUTPUT_SILVER = DB_OUTPUT_DIR / "silver"
+DB_OUTPUT_GOLD = DB_OUTPUT_DIR / "gold"
+
+
 LOGS_DIR = DB_OUTPUT_DIR / "logs"
 
 SOURCE_BASE_URLS: dict[SourceSite, str] = {
