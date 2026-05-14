@@ -17,10 +17,10 @@ This project demonstrates a production-oriented scraping architecture:
 The project is structured into several layers:
 
 - `domain`: core business models and enums
-- `core`: configuration, constants, logging
-- `infra`: database and browser interaction
-- `scraper`: scraping logic (base + source-specific)
-- `services`: orchestration layer
+- `config`: settings and constants
+- `db`: SQLite schema and repositories
+- `browser`: Playwright session management
+- `sources`: source-specific discovery and parsing
 - `app`: entry point
 
 ## Data Source
@@ -29,7 +29,7 @@ Initial implementation targets:
 
 - Oxylabs Sandbox (scraping-friendly environment)
 
-Future sources can be added via the `scraper/sources` module.
+Future sources can be added via the `ecommerce_ingestion.sources` package.
 
 ## Tech Stack
 
@@ -48,7 +48,7 @@ playwright install
 ## Run
 
 ```bash
-python -m scraper_engine.app.main
+python -m ecommerce_ingestion.app.main
 ```
 
 ## Testing

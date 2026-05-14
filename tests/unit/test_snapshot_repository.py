@@ -5,15 +5,15 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
-from domain.enums import (
+from ecommerce_ingestion.domain.enums import (
     Currency,
     RunStatus,
     RunType,
     SourceSite,
     StockStatus,
 )
-from domain.models import Product, ProductSnapshot, ScraperRun
-from scraper_engine.db.repositories import (
+from ecommerce_ingestion.domain.models import Product, ProductSnapshot, ScraperRun
+from ecommerce_ingestion.db.repositories import (
     ProductRepository,
     ProductSnapshotRepository,
     RunRepository,
@@ -23,7 +23,7 @@ from scraper_engine.db.repositories import (
 def test_snapshot_insert_creates_time_series_rows() -> None:
     connection = sqlite3.connect(":memory:")
     connection.executescript(
-        Path("src/scraper_engine/infra/db/schema.sql").read_text(encoding="utf-8")
+        Path("src/ecommerce_ingestion/db/schema.sql").read_text(encoding="utf-8")
     )
     try:
         run_repository = RunRepository(connection)
