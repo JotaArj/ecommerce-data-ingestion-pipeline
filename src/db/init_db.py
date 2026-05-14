@@ -1,16 +1,24 @@
-from src.config.constants import PROJECT_ROOT
-from src.config.settings import load_settings
+from src.config.settings import Settings, load_settings
 from src.db.sqlite import build_database
+
+
+def initialize_database_if_missing(settings: Settings) -> bool:
+    database = build_database(settings)
+    if database.db_path.exists():
+        return False
+
+    database.initialize()
+    return True
 
 
 def main() -> None:
     settings = load_settings()
     database = build_database(settings)
 
-    schema_path = PROJECT_ROOT / "src" / "scraper_engine" / "infra" / "db" / "schema.sql"  # noqa: E501
-    database.initialize(schema_path)
+    created = initialize_database_if_missing(settings)
+    status = "created" if created else "already exists"
 
-    print(f"Database initialized at: {database.db_path}")
+    print(f"Database {status} at: {database.db_path}")
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ from uuid import uuid4
 from playwright.sync_api import Page
 
 from src.browser.playwright_factory import PlaywrightFactory
+from src.config.constants import OXILABS_URL_CATEGORY_PREFIX
 from src.config.settings import Settings
 from src.db.repositories import (
     CategoryRepository,
@@ -82,11 +83,16 @@ def run_catalog(settings: Settings) -> None:
                         for product in products:
                             product_repository.upsert(product)
 
+                        for product_category_link in product_category_links:
+                            _ensure_category_exists(
+                                category_repository,
+                                settings,
+                                product_category_link.category_id,
+                            )
+                            product_category_repository.upsert(product_category_link)
+
                         for product_snapshot in product_snapshots:
                             product_snapshot_repository.insert(product_snapshot)
-
-                        for product_category_link in product_category_links:
-                            product_category_repository.upsert(product_category_link)
 
                         total_products += len(products)
                         total_snapshots += len(product_snapshots)
@@ -162,14 +168,17 @@ def _discover_categories_for_source(
         f"Catalog runner not implemented for source site: {settings.source_site}"
     )
 
+
 def capture_products_json_from_navigation(
     settings: Settings, page: Page, num_page: int
 ) -> dict[str, object]:
     with page.expect_response(
         lambda response: "/api/products" in response.url
     ) as response_info:
-        page.goto(settings.start_scraping_url + str(num_page), 
-                  wait_until="networkidle")
+        page.goto(
+            settings.start_scraping_url + str(num_page),
+            wait_until="networkidle",
+        )
 
     response = response_info.value
     payload: object = response.json()
@@ -204,11 +213,66 @@ def _capture_atributes_from_json(json: dict[str, object]) -> tuple[int, int]:
 
     return page_count, per_page
 
-def _discover_products_from_json(page: Page, 
-                                 run_id: str,
-                                 json: dict[str, object]) -> tuple[list[Product], 
-                                                                               list[ProductSnapshot], 
-                                                                               list[ProductCategoryLink]]:
+
+def _discover_products_from_json(
+    page: Page, run_id: str, json: dict[str, object]
+) -> tuple[list[Product], list[ProductSnapshot], list[ProductCategoryLink]]:
     discovery = Discovery(page)
 
     return discovery.discover_products(json, run_id)
+
+
+def _ensure_category_exists(
+    category_repository: CategoryRepository,
+    settings: Settings,
+    category_id: str,
+    *,
+    is_leaf: bool = True,
+) -> None:
+    if category_repository.exists(category_id):
+        return
+
+    category = _category_from_id(settings, category_id, is_leaf=is_leaf)
+    if category.parent_id is not None:
+        _ensure_category_exists(
+            category_repository,
+            settings,
+            category.parent_id,
+            is_leaf=False,
+        )
+
+    category_repository.upsert(category)
+
+
+def _category_from_id(
+    settings: Settings,
+    category_id: str,
+    *,
+    is_leaf: bool,
+) -> CategoryNode:
+    source_prefix = f"{settings.source_site.value}:"
+    if category_id.startswith(source_prefix):
+        path = category_id.removeprefix(source_prefix)
+    else:
+        path = category_id
+
+    path_parts = path.split("/")
+    name = path_parts[-1]
+    parent_id = None
+    if len(path_parts) > 1:
+        parent_id = f"{settings.source_site.value}:{path_parts[0]}"
+
+    now = datetime.now()
+    return CategoryNode(
+        id=category_id,
+        source_site=settings.source_site,
+        source_category_code=path,
+        name=name,
+        url=OXILABS_URL_CATEGORY_PREFIX + path,
+        path=path,
+        parent_id=parent_id,
+        level=len(path_parts),
+        is_leaf=is_leaf,
+        created_at=now,
+        updated_at=now,
+    )

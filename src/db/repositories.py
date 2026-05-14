@@ -116,6 +116,18 @@ class CategoryRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
+    def exists(self, category_id: str) -> bool:
+        row = self._connection.execute(
+            """
+            SELECT 1
+            FROM categories
+            WHERE id = ?
+            LIMIT 1
+            """,
+            (category_id,),
+        ).fetchone()
+        return row is not None
+
     def upsert(self, category: CategoryNode) -> None:
         self._connection.execute(
             """

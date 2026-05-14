@@ -1,4 +1,3 @@
-
 from playwright.sync_api import Page
 
 from src.config.constants import OXYLABS_CATEGORY_START_PATH
@@ -16,13 +15,10 @@ from src.sources.oxylabs.selectors import (
 
 
 class Discovery:
-
     def __init__(self, page: Page) -> None:
         self._page = page
 
-    # The first category is discarded due to being all products.
     def discover_categories(self) -> list[CategoryNode]:
-
         not_leaf_category_urls = []
         category_urls = []
         subcategory_urls = []
@@ -57,9 +53,7 @@ class Discovery:
 
         return [href for href in hrefs if isinstance(href, str)]
 
-    def discover_products(self, 
-                          json: dict[str, object], 
-                          run_id: str) -> tuple[list[Product], 
-                                                list[ProductSnapshot], 
-                                                list[ProductCategoryLink]]:
+    def discover_products(
+        self, json: dict[str, object], run_id: str
+    ) -> tuple[list[Product], list[ProductSnapshot], list[ProductCategoryLink]]:
         return Parsers.parse_products(self._page, json, run_id)
