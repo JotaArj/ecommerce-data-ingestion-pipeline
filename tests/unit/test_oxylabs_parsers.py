@@ -47,16 +47,14 @@ def test_parse_products_reads_price_from_price_wrapper() -> None:
     )
 
     assert page.selectors == [PRICE_SELECTOR]
-    assert [genre.genre_id for genre in genres] == ["Action Adventure", "Fantasy"]
-    assert [link.genre_id for link in genre_links] == ["Action Adventure", "Fantasy"]
+    assert [genre.genre_id for genre in genres] == ["action adventure", "fantasy"]
+    assert [link.genre_id for link in genre_links] == ["action adventure", "fantasy"]
     assert snapshots[0].current_price == Decimal("91.99")
     assert snapshots[0].currency == Currency.EUR
-    assert [link.category_id for link in links] == [
-        "oxylabs_sandbox:nintendo/nintendo-64"
-    ]
+    assert [link.category_id for link in links] == ["nintendo/nintendo-64"]
 
 
 def test_parse_category_ids_accepts_game_boy_advance_slug() -> None:
     assert Parsers._parse_category_ids("['game-boy-advance']") == [
-        "oxylabs_sandbox:nintendo/game-boy-advance"
+        "nintendo/game-boy-advance"
     ]
