@@ -1,10 +1,11 @@
-import json
 import sqlite3
 from datetime import datetime
 from decimal import Decimal
 
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
+    GameGenre,
+    GameGenreLink,
     GameProduct,
     GameProductCategoryLink,
     GameProductSnapshot,
@@ -79,10 +80,9 @@ class GameProductRepository:
                 game_developer,
                 game_created_at,
                 game_updated_at,
-                game_genre,
                 game_description
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(game_id) DO UPDATE SET
                 game_source_site = excluded.game_source_site,
                 source_game_product_code = excluded.source_game_product_code,
@@ -92,7 +92,6 @@ class GameProductRepository:
                 game_pdp_url = excluded.game_pdp_url,
                 game_developer = excluded.game_developer,
                 game_updated_at = excluded.game_updated_at,
-                game_genre = excluded.game_genre,
                 game_description = excluded.game_description
             """,
             (
@@ -106,9 +105,6 @@ class GameProductRepository:
                 game_product.game_developer,
                 _dt(game_product.game_created_at),
                 _dt(game_product.game_updated_at),
-                json.dumps(game_product.game_genre)
-                if game_product.game_genre is not None
-                else None,
                 game_product.game_description,
             ),
         )
@@ -231,5 +227,42 @@ class GameProductSnapshotRepository:
                 _decimal_to_str(snapshot.meta_score),
                 _decimal_to_str(snapshot.user_score),
                 _dt(created_at),
+            ),
+        )
+
+
+class GameGenreRepository:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self._connection = connection
+
+    def upsert(self, genre: GameGenre) -> None:
+        self._connection.execute(
+            """
+            INSERT OR REPLACE INTO game_genre (
+                genre_id
+            )
+            VALUES (?)
+            """,
+            (
+                genre.genre_id,
+            ),
+        )
+        
+class GameGenreGameLinkRepository:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self._connection = connection
+
+    def upsert(self, link: GameGenreLink) -> None:
+        self._connection.execute(
+            """
+            INSERT OR REPLACE INTO game_genre_game_link (
+                game_id,
+                genre_id
+            )
+            VALUES (?, ?)
+            """,
+            (
+                link.game_id,
+                link.genre_id,
             ),
         )

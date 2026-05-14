@@ -11,6 +11,8 @@ from ecommerce_ingestion.config.constants import OXILABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.config.settings import Settings
 from ecommerce_ingestion.db.repositories import (
     CategoryRepository,
+    GameGenreGameLinkRepository,
+    GameGenreRepository,
     GameProductCategoryRepository,
     GameProductRepository,
     GameProductSnapshotRepository,
@@ -20,6 +22,8 @@ from ecommerce_ingestion.db.sqlite import SQLiteDatabase, build_database
 from ecommerce_ingestion.domain.enums import RunStatus, RunType, SourceSite
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
+    GameGenre,
+    GameGenreLink,
     GameProduct,
     GameProductCategoryLink,
     GameProductSnapshot,
@@ -60,6 +64,8 @@ def run_catalog(settings: Settings) -> None:
                         connection
                     )
                     game_product_repository = GameProductRepository(connection)
+                    game_genre_repository = GameGenreRepository(connection)
+                    game_genre_game_link_repository = GameGenreGameLinkRepository(connection)  # noqa: E501
 
                     category_nodes = _discover_categories(settings, page)
                     logger.info("Discovered %s categories", len(category_nodes))
@@ -82,6 +88,8 @@ def run_catalog(settings: Settings) -> None:
                             game_products,
                             game_product_snapshots,
                             game_product_category_links,
+                            game_genres,
+                            game_genre_links,
                         ) = _discover_products_from_json(page, run.id, json)
 
                         for game_product in game_products:
@@ -102,11 +110,21 @@ def run_catalog(settings: Settings) -> None:
                                 game_product_snapshot
                             )
 
+                        for game_genre in game_genres:
+                            game_genre_repository.upsert(game_genre)
+
+                        for game_genre_link in game_genre_links:
+                            game_genre_game_link_repository.upsert(game_genre_link)
+
                         total_products += len(game_products)
                         total_snapshots += len(game_product_snapshots)
                         total_links += len(game_product_category_links)
+
                         logger.info(
-                            "Processed page %s: %s products, %s snapshots, %s links",
+                            "Processed page %s: "
+                            "%s products, "
+                            "%s snapshots, "
+                            "%s category links",
                             page_number,
                             len(game_products),
                             len(game_product_snapshots),
@@ -117,7 +135,10 @@ def run_catalog(settings: Settings) -> None:
         run.finished_at = datetime.now()
         _save_run(database, run)
         logger.info(
-            "Catalog run %s succeeded: %s products, %s snapshots, %s links",
+            "Catalog run %s succeeded: "
+            "%s products, "
+            "%s snapshots, "
+            "%s category links, ",
             run.id,
             total_products,
             total_snapshots,
@@ -228,6 +249,8 @@ def _discover_products_from_json(
     list[GameProduct],
     list[GameProductSnapshot],
     list[GameProductCategoryLink],
+    list[GameGenre],
+    list[GameGenreLink],
 ]:
     discovery = Discovery(page)
 

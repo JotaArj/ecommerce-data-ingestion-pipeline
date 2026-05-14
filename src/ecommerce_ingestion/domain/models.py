@@ -23,7 +23,6 @@ class GameProduct:
     game_developer: str | None
     game_created_at: datetime
     game_updated_at: datetime
-    game_genre: list[str] | None
     game_description: str | None = None
 
 
@@ -72,3 +71,12 @@ class ScraperRun:
     started_at: datetime
     finished_at: datetime | None = None
     error_message: str | None = None
+
+@dataclass(slots=True)
+class GameGenre:
+    genre_id: str
+
+@dataclass(slots=True)
+class GameGenreLink:
+    game_id: str
+    genre_id: str

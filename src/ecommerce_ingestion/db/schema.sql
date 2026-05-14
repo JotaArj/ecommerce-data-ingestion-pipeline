@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS game_products (
     game_developer TEXT,
     game_created_at TEXT NOT NULL,
     game_updated_at TEXT NOT NULL,
-    game_genre TEXT,
     game_description TEXT,
     UNIQUE (game_source_site, source_game_product_code),
     UNIQUE (game_source_site, game_pdp_url)
@@ -69,6 +68,18 @@ CREATE TABLE IF NOT EXISTS game_product_snapshots (
     FOREIGN KEY (run_id) REFERENCES runs(id)
 );
 
+CREATE TABLE IF NOT EXISTS game_genre (
+    genre_id TEXT PRIMARY KEY UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS game_genre_game_link (
+    game_id TEXT NOT NULL,
+    genre_id TEXT NOT NULL,
+    PRIMARY KEY (game_id, genre_id),
+    FOREIGN KEY (game_id) REFERENCES game_products(game_id),
+    FOREIGN KEY (genre_id) REFERENCES game_genre(genre_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_runs_source_site
     ON runs(source_site);
 
@@ -95,3 +106,7 @@ CREATE INDEX IF NOT EXISTS idx_game_product_snapshots_observed_at
 
 CREATE INDEX IF NOT EXISTS idx_game_product_snapshots_game_product_observed_at
     ON game_product_snapshots(game_product_id, observed_at);
+
+CREATE INDEX IF NOT EXISTS idx_game_genre_game_link_genre_id
+    ON game_genre_game_link(genre_id);
+
