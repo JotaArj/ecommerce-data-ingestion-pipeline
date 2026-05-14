@@ -2,7 +2,7 @@
 
 from playwright.sync_api import Page
 
-from scraper_engine.sources.oxylabs.selectors import DROPDOWN_MENU_CATEGORIES
+from src.sources.oxylabs.selectors import DROPDOWN_MENU_CATEGORIES
 
 
 class Scraper:

@@ -11,7 +11,7 @@ from playwright.sync_api import (
     sync_playwright,
 )
 
-from config.settings import Settings
+from src.config.settings import Settings
 
 
 class PlaywrightFactory:

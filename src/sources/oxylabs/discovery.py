@@ -1,15 +1,15 @@
 
 from playwright.sync_api import Page
 
-from scraper_engine.config.constants import OXYLABS_CATEGORY_START_PATH
-from domain.models import (
+from src.config.constants import OXYLABS_CATEGORY_START_PATH
+from src.domain.models import (
     CategoryNode,
     Product,
     ProductCategoryLink,
     ProductSnapshot,
 )
-from sources.oxylabs.parsers import Parsers
-from scraper_engine.sources.oxylabs.selectors import (
+from src.sources.oxylabs.parsers import Parsers
+from src.sources.oxylabs.selectors import (
     CATEGORY_LINKS,
     DROPDOWN_MENU_CATEGORIES,
 )

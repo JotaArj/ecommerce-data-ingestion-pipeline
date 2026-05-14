@@ -5,7 +5,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from config.settings import Settings
+from src.config.settings import Settings
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 

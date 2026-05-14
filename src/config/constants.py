@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from pathlib import Path
 
-from scraper_engine.domain.enums import SourceSite
+from src.domain.enums import SourceSite
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 

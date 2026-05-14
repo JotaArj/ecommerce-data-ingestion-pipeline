@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
@@ -8,27 +6,27 @@ from uuid import uuid4
 
 from playwright.sync_api import Page
 
-from config.settings import Settings
-from domain.enums import RunStatus, RunType, SourceSite
-from domain.models import (
-    CategoryNode,
-    Product,
-    ProductCategoryLink,
-    ProductSnapshot,
-    ScraperRun,
-)
-from browser.playwright_factory import PlaywrightFactory
-from scraper_engine.db.repositories import (
+from src.browser.playwright_factory import PlaywrightFactory
+from src.config.settings import Settings
+from src.db.repositories import (
     CategoryRepository,
     ProductCategoryRepository,
     ProductRepository,
     ProductSnapshotRepository,
     RunRepository,
 )
-from db.sqlite import SQLiteDatabase, build_database
-from sources.oxylabs.discovery import Discovery
-from sources.oxylabs.scraper import Scraper
-from scraper_engine.sources.oxylabs.selectors import PRICE_SELECTOR
+from src.db.sqlite import SQLiteDatabase, build_database
+from src.domain.enums import RunStatus, RunType, SourceSite
+from src.domain.models import (
+    CategoryNode,
+    Product,
+    ProductCategoryLink,
+    ProductSnapshot,
+    ScraperRun,
+)
+from src.sources.oxylabs.discovery import Discovery
+from src.sources.oxylabs.scraper import Scraper
+from src.sources.oxylabs.selectors import PRICE_SELECTOR
 
 logger = logging.getLogger(__name__)
 

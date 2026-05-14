@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
-from domain.enums import (
+from src.domain.enums import (
     Currency,
     RunStatus,
     RunType,

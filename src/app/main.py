@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-from application.run_catalog import run_catalog
-from config.settings import load_settings
+from src.app.run_catalog import run_catalog
+from src.config.settings import load_settings
 
 
 def main() -> None:
