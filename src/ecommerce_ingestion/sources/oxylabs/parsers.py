@@ -9,6 +9,8 @@ from ecommerce_ingestion.config.constants import OXILABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.domain.enums import Currency, SourceSite, StockStatus
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
+    GameGenre,
+    GameGenreLink,
     GameProduct,
     GameProductCategoryLink,
     GameProductSnapshot,
@@ -116,18 +118,22 @@ class Parsers:
         list[GameProduct],
         list[GameProductSnapshot],
         list[GameProductCategoryLink],
+        list[GameGenre],
+        list[GameGenreLink],
     ]:
         game_products: list[GameProduct] = []
         game_product_snapshots: list[GameProductSnapshot] = []
         game_product_category_links: list[GameProductCategoryLink] = []
+        game_genres: list[GameGenre] = []
+        game_genre_links: list[GameGenreLink] = []
 
         page_props = json.get("pageProps")
         if not isinstance(page_props, dict):
-            return game_products, game_product_snapshots, game_product_category_links
+            return game_products, game_product_snapshots, game_product_category_links, game_genres, game_genre_links  # noqa: E501
 
         product_list = page_props.get("products")
         if not isinstance(product_list, list):
-            return game_products, game_product_snapshots, game_product_category_links
+            return game_products, game_product_snapshots, game_product_category_links, game_genres, game_genre_links  # noqa: E501
 
         price_texts = page.locator(PRICE_SELECTOR).all_inner_texts()
         for index, data_product in enumerate(product_list):
@@ -159,7 +165,6 @@ class Parsers:
                 game_pdp_url=pdp_url,
                 game_created_at=now,
                 game_updated_at=now,
-                game_genre=Parsers._parse_genre(data_product.get("genre")),
                 game_description=Parsers._optional_str(data_product.get("description")),
             )
             game_products.append(game_product)
@@ -188,7 +193,18 @@ class Parsers:
                     )
                 )
 
-        return game_products, game_product_snapshots, game_product_category_links
+            genre_list = Parsers._parse_genre(data_product.get("genre"))
+            if genre_list is not None:
+                for genre_id in genre_list:
+                    game_genre_links.append(
+                        GameGenreLink(
+                            game_id=game_product_id,
+                            genre_id=genre_id,
+                        )
+                    )
+                    game_genres.append(GameGenre(genre_id=genre_id))
+
+        return game_products, game_product_snapshots, game_product_category_links, game_genres, game_genre_links  # noqa: E501
 
     @staticmethod
     def _parse_price_and_currency(price_text: str) -> tuple[Decimal | None, Currency]:
@@ -246,7 +262,7 @@ class Parsers:
         if not isinstance(value, list):
             return None
 
-        genre = [item for item in value if isinstance(item, str)]
+        genre = [item.strip().lower() for item in value if isinstance(item, str)]
         return genre or None
 
     @staticmethod

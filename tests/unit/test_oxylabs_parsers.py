@@ -42,10 +42,13 @@ def test_parse_products_reads_price_from_price_wrapper() -> None:
         }
     }
 
-    game_products, snapshots, links = Parsers.parse_products(page, payload, "run-1")
+    game_products, snapshots, links, genres, genre_links = Parsers.parse_products(
+        page, payload, "run-1"
+    )
 
     assert page.selectors == [PRICE_SELECTOR]
-    assert game_products[0].genre == ["Action Adventure", "Fantasy"]
+    assert [genre.genre_id for genre in genres] == ["Action Adventure", "Fantasy"]
+    assert [link.genre_id for link in genre_links] == ["Action Adventure", "Fantasy"]
     assert snapshots[0].current_price == Decimal("91.99")
     assert snapshots[0].currency == Currency.EUR
     assert [link.category_id for link in links] == [

@@ -3,6 +3,8 @@ from playwright.sync_api import Page
 from ecommerce_ingestion.config.constants import OXYLABS_CATEGORY_START_PATH
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
+    GameGenre,
+    GameGenreLink,
     GameProduct,
     GameProductCategoryLink,
     GameProductSnapshot,
@@ -59,5 +61,7 @@ class Discovery:
         list[GameProduct],
         list[GameProductSnapshot],
         list[GameProductCategoryLink],
+        list[GameGenre],
+        list[GameGenreLink],
     ]:
         return Parsers.parse_products(self._page, json, run_id)
