@@ -3,8 +3,13 @@ from __future__ import annotations
 import sqlite3
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
+from importlib import resources
 
+from ecommerce_ingestion.db.repositories import (
+    ProductRepository,
+    ProductSnapshotRepository,
+    RunRepository,
+)
 from ecommerce_ingestion.domain.enums import (
     Currency,
     RunStatus,
@@ -13,18 +18,14 @@ from ecommerce_ingestion.domain.enums import (
     StockStatus,
 )
 from ecommerce_ingestion.domain.models import Product, ProductSnapshot, ScraperRun
-from ecommerce_ingestion.db.repositories import (
-    ProductRepository,
-    ProductSnapshotRepository,
-    RunRepository,
-)
 
 
 def test_snapshot_insert_creates_time_series_rows() -> None:
     connection = sqlite3.connect(":memory:")
-    connection.executescript(
-        Path("src/ecommerce_ingestion/db/schema.sql").read_text(encoding="utf-8")
-    )
+    schema_sql = resources.files("ecommerce_ingestion.db").joinpath(
+        "schema.sql"
+    ).read_text(encoding="utf-8")
+    connection.executescript(schema_sql)
     try:
         run_repository = RunRepository(connection)
         product_repository = ProductRepository(connection)
