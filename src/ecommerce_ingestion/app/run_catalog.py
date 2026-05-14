@@ -11,18 +11,18 @@ from ecommerce_ingestion.config.constants import OXILABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.config.settings import Settings
 from ecommerce_ingestion.db.repositories import (
     CategoryRepository,
-    ProductCategoryRepository,
-    ProductRepository,
-    ProductSnapshotRepository,
+    GameProductCategoryRepository,
+    GameProductRepository,
+    GameProductSnapshotRepository,
     RunRepository,
 )
 from ecommerce_ingestion.db.sqlite import SQLiteDatabase, build_database
 from ecommerce_ingestion.domain.enums import RunStatus, RunType, SourceSite
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
-    Product,
-    ProductCategoryLink,
-    ProductSnapshot,
+    GameProduct,
+    GameProductCategoryLink,
+    GameProductSnapshot,
     ScraperRun,
 )
 from ecommerce_ingestion.sources.oxylabs.discovery import Discovery
@@ -53,9 +53,13 @@ def run_catalog(settings: Settings) -> None:
             with factory.page_session() as page:
                 with database.session() as connection:
                     category_repository = CategoryRepository(connection)
-                    product_category_repository = ProductCategoryRepository(connection)
-                    product_snapshot_repository = ProductSnapshotRepository(connection)
-                    product_repository = ProductRepository(connection)
+                    game_product_category_repository = GameProductCategoryRepository(
+                        connection
+                    )
+                    game_product_snapshot_repository = GameProductSnapshotRepository(
+                        connection
+                    )
+                    game_product_repository = GameProductRepository(connection)
 
                     category_nodes = _discover_categories(settings, page)
                     logger.info("Discovered %s categories", len(category_nodes))
@@ -75,34 +79,38 @@ def run_catalog(settings: Settings) -> None:
                             settings, page, page_number
                         )
                         (
-                            products,
-                            product_snapshots,
-                            product_category_links,
+                            game_products,
+                            game_product_snapshots,
+                            game_product_category_links,
                         ) = _discover_products_from_json(page, run.id, json)
 
-                        for product in products:
-                            product_repository.upsert(product)
+                        for game_product in game_products:
+                            game_product_repository.upsert(game_product)
 
-                        for product_category_link in product_category_links:
+                        for game_product_category_link in game_product_category_links:
                             _ensure_category_exists(
                                 category_repository,
                                 settings,
-                                product_category_link.category_id,
+                                game_product_category_link.category_id,
                             )
-                            product_category_repository.upsert(product_category_link)
+                            game_product_category_repository.upsert(
+                                game_product_category_link
+                            )
 
-                        for product_snapshot in product_snapshots:
-                            product_snapshot_repository.insert(product_snapshot)
+                        for game_product_snapshot in game_product_snapshots:
+                            game_product_snapshot_repository.insert(
+                                game_product_snapshot
+                            )
 
-                        total_products += len(products)
-                        total_snapshots += len(product_snapshots)
-                        total_links += len(product_category_links)
+                        total_products += len(game_products)
+                        total_snapshots += len(game_product_snapshots)
+                        total_links += len(game_product_category_links)
                         logger.info(
                             "Processed page %s: %s products, %s snapshots, %s links",
                             page_number,
-                            len(products),
-                            len(product_snapshots),
-                            len(product_category_links),
+                            len(game_products),
+                            len(game_product_snapshots),
+                            len(game_product_category_links),
                         )
 
         run.status = RunStatus.SUCCEEDED
@@ -216,7 +224,11 @@ def _capture_atributes_from_json(json: dict[str, object]) -> tuple[int, int]:
 
 def _discover_products_from_json(
     page: Page, run_id: str, json: dict[str, object]
-) -> tuple[list[Product], list[ProductSnapshot], list[ProductCategoryLink]]:
+) -> tuple[
+    list[GameProduct],
+    list[GameProductSnapshot],
+    list[GameProductCategoryLink],
+]:
     discovery = Discovery(page)
 
     return discovery.discover_products(json, run_id)
@@ -233,11 +245,11 @@ def _ensure_category_exists(
         return
 
     category = _category_from_id(settings, category_id, is_leaf=is_leaf)
-    if category.parent_id is not None:
+    if category.category_parent_id is not None:
         _ensure_category_exists(
             category_repository,
             settings,
-            category.parent_id,
+            category.category_parent_id,
             is_leaf=False,
         )
 
@@ -257,22 +269,22 @@ def _category_from_id(
         path = category_id
 
     path_parts = path.split("/")
-    name = path_parts[-1]
+    category_name = path_parts[-1]
     parent_id = None
     if len(path_parts) > 1:
-        parent_id = f"{settings.source_site.value}:{path_parts[0]}"
+        parent_id = path_parts[0]
 
     now = datetime.now()
     return CategoryNode(
-        id=category_id,
-        source_site=settings.source_site,
+        category_id=category_id,
+        category_source_site=settings.source_site,
         source_category_code=path,
-        name=name,
-        url=OXILABS_URL_CATEGORY_PREFIX + path,
-        path=path,
-        parent_id=parent_id,
-        level=len(path_parts),
-        is_leaf=is_leaf,
-        created_at=now,
-        updated_at=now,
+        category_name=category_name,
+        category_url=OXILABS_URL_CATEGORY_PREFIX + path,
+        category_path=path,
+        category_parent_id=parent_id,
+        category_level=len(path_parts),
+        category_is_leaf=is_leaf,
+        category_created_at=now,
+        category_updated_at=now,
     )

@@ -3,9 +3,9 @@ from playwright.sync_api import Page
 from ecommerce_ingestion.config.constants import OXYLABS_CATEGORY_START_PATH
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
-    Product,
-    ProductCategoryLink,
-    ProductSnapshot,
+    GameProduct,
+    GameProductCategoryLink,
+    GameProductSnapshot,
 )
 from ecommerce_ingestion.sources.oxylabs.parsers import Parsers
 from ecommerce_ingestion.sources.oxylabs.selectors import (
@@ -55,5 +55,9 @@ class Discovery:
 
     def discover_products(
         self, json: dict[str, object], run_id: str
-    ) -> tuple[list[Product], list[ProductSnapshot], list[ProductCategoryLink]]:
+    ) -> tuple[
+        list[GameProduct],
+        list[GameProductSnapshot],
+        list[GameProductCategoryLink],
+    ]:
         return Parsers.parse_products(self._page, json, run_id)

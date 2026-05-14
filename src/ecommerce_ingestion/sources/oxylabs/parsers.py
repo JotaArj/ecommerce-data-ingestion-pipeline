@@ -9,9 +9,9 @@ from ecommerce_ingestion.config.constants import OXILABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.domain.enums import Currency, SourceSite, StockStatus
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
-    Product,
-    ProductCategoryLink,
-    ProductSnapshot,
+    GameProduct,
+    GameProductCategoryLink,
+    GameProductSnapshot,
 )
 from ecommerce_ingestion.sources.oxylabs.selectors import PRICE_SELECTOR
 
@@ -73,17 +73,17 @@ class Parsers:
 
         for category_url in category_urls:
             category_node = CategoryNode(
-                id=f"{SourceSite.OXYLABS_SANDBOX.value}:{category_url}",
-                source_site=SourceSite.OXYLABS_SANDBOX,
+                category_id=category_url,
+                category_source_site=SourceSite.OXYLABS_SANDBOX,
                 source_category_code=category_url,
-                name=category_url,
-                url=OXILABS_URL_CATEGORY_PREFIX + category_url,
-                path=category_url,
-                parent_id=None,
-                level=1,
-                is_leaf=category_url not in not_leaf_category_urls,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
+                category_name=category_url,
+                category_url=OXILABS_URL_CATEGORY_PREFIX + category_url,
+                category_path=category_url,
+                category_parent_id=None,
+                category_level=1,
+                category_is_leaf=category_url not in not_leaf_category_urls,
+                category_created_at=datetime.now(),
+                category_updated_at=datetime.now(),
             )
             category_node_list.append(category_node)
 
@@ -91,19 +91,19 @@ class Parsers:
             subcategory_url_split = subcategory_url.split("/")
             subcategory = subcategory_url_split[-1]
             parent = subcategory_url_split[0]
-            parent_id = f"{SourceSite.OXYLABS_SANDBOX.value}:{parent}"
+            parent_id = parent
             category_node = CategoryNode(
-                id=f"{SourceSite.OXYLABS_SANDBOX.value}:{subcategory_url}",
-                source_site=SourceSite.OXYLABS_SANDBOX,
+                category_id=subcategory_url,
+                category_source_site=SourceSite.OXYLABS_SANDBOX,
                 source_category_code=subcategory_url,
-                name=subcategory,
-                url=OXILABS_URL_CATEGORY_PREFIX + subcategory_url,
-                path=subcategory_url,
-                parent_id=parent_id,
-                level=2,
-                is_leaf=True,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
+                category_name=subcategory,
+                category_url=OXILABS_URL_CATEGORY_PREFIX + subcategory_url,
+                category_path=subcategory_url,
+                category_parent_id=parent_id,
+                category_level=2,
+                category_is_leaf=True,
+                category_created_at=datetime.now(),
+                category_updated_at=datetime.now(),
             )
             category_node_list.append(category_node)
 
@@ -112,52 +112,60 @@ class Parsers:
     @staticmethod
     def parse_products(
         page: Page, json: dict[str, object], run_id: str
-    ) -> tuple[list[Product], list[ProductSnapshot], list[ProductCategoryLink]]:
-        products: list[Product] = []
-        product_snapshots: list[ProductSnapshot] = []
-        product_category_links: list[ProductCategoryLink] = []
+    ) -> tuple[
+        list[GameProduct],
+        list[GameProductSnapshot],
+        list[GameProductCategoryLink],
+    ]:
+        game_products: list[GameProduct] = []
+        game_product_snapshots: list[GameProductSnapshot] = []
+        game_product_category_links: list[GameProductCategoryLink] = []
 
         page_props = json.get("pageProps")
         if not isinstance(page_props, dict):
-            return products, product_snapshots, product_category_links
+            return game_products, game_product_snapshots, game_product_category_links
 
         product_list = page_props.get("products")
         if not isinstance(product_list, list):
-            return products, product_snapshots, product_category_links
+            return game_products, game_product_snapshots, game_product_category_links
 
         price_texts = page.locator(PRICE_SELECTOR).all_inner_texts()
         for index, data_product in enumerate(product_list):
             if not isinstance(data_product, dict):
                 continue
 
-            product_id = Parsers._optional_str(data_product.get("game_name"))
-            source_product_code = Parsers._optional_str(data_product.get("id"))
+            game_product_id = Parsers._optional_str(data_product.get("game_name"))
+            source_game_product_code = Parsers._optional_str(data_product.get("id"))
             pdp_url = Parsers._optional_str(data_product.get("url"))
-            if product_id is None or source_product_code is None or pdp_url is None:
+            if (
+                game_product_id is None
+                or source_game_product_code is None
+                or pdp_url is None
+            ):
                 continue
 
             now = datetime.now()
             price_text = price_texts[index] if index < len(price_texts) else ""
             price, currency = Parsers._parse_price_and_currency(price_text)
 
-            product = Product(
-                id=product_id,
-                source_site=SourceSite.OXYLABS_SANDBOX,
-                source_product_code=source_product_code,
-                product_type=Parsers._optional_str(data_product.get("type")),
-                name=product_id,
-                rating=Parsers._optional_str(data_product.get("rating")),
-                developer=Parsers._optional_str(data_product.get("developer")),
-                pdp_url=pdp_url,
-                created_at=now,
-                updated_at=now,
-                genre=Parsers._parse_genre(data_product.get("genre")),
-                description=Parsers._optional_str(data_product.get("description")),
+            game_product = GameProduct(
+                game_id=game_product_id,
+                game_source_site=SourceSite.OXYLABS_SANDBOX,
+                source_game_product_code=source_game_product_code,
+                game_product_type=Parsers._optional_str(data_product.get("type")),
+                game_name=game_product_id,
+                game_rating=Parsers._optional_str(data_product.get("rating")),
+                game_developer=Parsers._optional_str(data_product.get("developer")),
+                game_pdp_url=pdp_url,
+                game_created_at=now,
+                game_updated_at=now,
+                game_genre=Parsers._parse_genre(data_product.get("genre")),
+                game_description=Parsers._optional_str(data_product.get("description")),
             )
-            products.append(product)
+            game_products.append(game_product)
 
-            product_snapshot = ProductSnapshot(
-                source_product_id=product_id,
+            game_product_snapshot = GameProductSnapshot(
+                game_product_id=game_product_id,
                 run_id=run_id,
                 observed_at=now,
                 current_price=price,
@@ -168,19 +176,19 @@ class Parsers:
                 user_score=Parsers._parse_decimal(data_product.get("user_score")),
                 created_at=now,
             )
-            product_snapshots.append(product_snapshot)
+            game_product_snapshots.append(game_product_snapshot)
 
             category_ids = Parsers._parse_category_ids(data_product.get("platform"))
             for category_id in category_ids:
-                product_category_links.append(
-                    ProductCategoryLink(
-                        source_product_id=product_id,
+                game_product_category_links.append(
+                    GameProductCategoryLink(
+                        game_product_id=game_product_id,
                         category_id=category_id,
                         created_at=now,
                     )
                 )
 
-        return products, product_snapshots, product_category_links
+        return game_products, game_product_snapshots, game_product_category_links
 
     @staticmethod
     def _parse_price_and_currency(price_text: str) -> tuple[Decimal | None, Currency]:
@@ -253,7 +261,7 @@ class Parsers:
                 platform_name.strip().lower()
             )
             if category_path is not None:
-                category_ids.append(f"{SourceSite.OXYLABS_SANDBOX.value}:{category_path}")
+                category_ids.append(category_path)
 
         return category_ids
 

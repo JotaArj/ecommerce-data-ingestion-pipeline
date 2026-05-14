@@ -12,46 +12,46 @@ from ecommerce_ingestion.domain.enums import (
 
 
 @dataclass(slots=True)
-class Product:
-    id: str
-    source_site: SourceSite
-    source_product_code: str
-    name: str
-    product_type: str | None
-    rating: str | None
-    pdp_url: str
-    developer: str | None
-    created_at: datetime
-    updated_at: datetime
-    genre: list[str] | None
-    description: str | None = None
+class GameProduct:
+    game_id: str
+    game_source_site: SourceSite
+    source_game_product_code: str
+    game_name: str
+    game_product_type: str | None
+    game_rating: str | None
+    game_pdp_url: str
+    game_developer: str | None
+    game_created_at: datetime
+    game_updated_at: datetime
+    game_genre: list[str] | None
+    game_description: str | None = None
 
 
 @dataclass(slots=True)
 class CategoryNode:
-    id: str
-    source_site: SourceSite
+    category_id: str
+    category_source_site: SourceSite
     source_category_code: str
-    name: str
-    url: str
-    path: str
-    parent_id: str | None
-    level: int
-    is_leaf: bool
-    created_at: datetime
-    updated_at: datetime
+    category_name: str
+    category_url: str
+    category_path: str
+    category_parent_id: str | None
+    category_level: int
+    category_is_leaf: bool
+    category_created_at: datetime
+    category_updated_at: datetime
 
 
 @dataclass(slots=True)
-class ProductCategoryLink:
-    source_product_id: str 
+class GameProductCategoryLink:
+    game_product_id: str
     category_id: str
     created_at: datetime
 
 
 @dataclass(slots=True)
-class ProductSnapshot:
-    source_product_id: str
+class GameProductSnapshot:
+    game_product_id: str
     run_id: str
     observed_at: datetime
     current_price: Decimal | None

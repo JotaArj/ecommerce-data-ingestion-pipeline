@@ -6,8 +6,8 @@ from decimal import Decimal
 from importlib import resources
 
 from ecommerce_ingestion.db.repositories import (
-    ProductRepository,
-    ProductSnapshotRepository,
+    GameProductRepository,
+    GameProductSnapshotRepository,
     RunRepository,
 )
 from ecommerce_ingestion.domain.enums import (
@@ -17,7 +17,11 @@ from ecommerce_ingestion.domain.enums import (
     SourceSite,
     StockStatus,
 )
-from ecommerce_ingestion.domain.models import Product, ProductSnapshot, ScraperRun
+from ecommerce_ingestion.domain.models import (
+    GameProduct,
+    GameProductSnapshot,
+    ScraperRun,
+)
 
 
 def test_snapshot_insert_creates_time_series_rows() -> None:
@@ -28,24 +32,24 @@ def test_snapshot_insert_creates_time_series_rows() -> None:
     connection.executescript(schema_sql)
     try:
         run_repository = RunRepository(connection)
-        product_repository = ProductRepository(connection)
-        snapshot_repository = ProductSnapshotRepository(connection)
+        game_product_repository = GameProductRepository(connection)
+        game_product_snapshot_repository = GameProductSnapshotRepository(connection)
 
-        product = Product(
+        game_product = GameProduct(
             id="product-1",
             source_site=SourceSite.OXYLABS_SANDBOX,
-            source_product_code="1",
-            name="Product 1",
-            product_type=None,
+            source_game_product_code="1",
+            game_name="Product 1",
+            game_product_type=None,
             rating=None,
             pdp_url="https://example.test/product-1",
             developer=None,
-            created_at=datetime(2026, 4, 24, 10, 0, 0),
-            updated_at=datetime(2026, 4, 24, 10, 0, 0),
+            game_created_at=datetime(2026, 4, 24, 10, 0, 0),
+            game_updated_at=datetime(2026, 4, 24, 10, 0, 0),
             genre=None,
             description=None,
         )
-        product_repository.upsert(product)
+        game_product_repository.upsert(game_product)
 
         for index, price in enumerate((Decimal("10.00"), Decimal("11.00")), start=1):
             run_id = f"run-{index}"
@@ -58,9 +62,9 @@ def test_snapshot_insert_creates_time_series_rows() -> None:
                     started_at=datetime(2026, 4, 24, 10, index, 0),
                 )
             )
-            snapshot_repository.insert(
-                ProductSnapshot(
-                    source_product_id=product.id,
+            game_product_snapshot_repository.insert(
+                GameProductSnapshot(
+                    game_product_id=game_product.id,
                     run_id=run_id,
                     observed_at=datetime(2026, 4, 24, 10, index, 0),
                     current_price=price,
@@ -74,11 +78,11 @@ def test_snapshot_insert_creates_time_series_rows() -> None:
         rows = connection.execute(
             """
             SELECT run_id, current_price
-            FROM product_snapshots
-            WHERE source_product_id = ?
+            FROM game_product_snapshots
+            WHERE game_product_id = ?
             ORDER BY observed_at
             """,
-            (product.id,),
+            (game_product.id,),
         ).fetchall()
 
         assert rows == [("run-1", 10), ("run-2", 11)]

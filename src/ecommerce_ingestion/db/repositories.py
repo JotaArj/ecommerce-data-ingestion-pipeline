@@ -5,9 +5,9 @@ from decimal import Decimal
 
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
-    Product,
-    ProductCategoryLink,
-    ProductSnapshot,
+    GameProduct,
+    GameProductCategoryLink,
+    GameProductSnapshot,
     ScraperRun,
 )
 
@@ -61,53 +61,55 @@ class RunRepository:
         )
 
 
-class ProductRepository:
+class GameProductRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-    def upsert(self, product: Product) -> None:
+    def upsert(self, game_product: GameProduct) -> None:
         self._connection.execute(
             """
-            INSERT INTO products (
-                id,
-                source_site,
-                source_product_code,
-                name,
-                product_type,
-                rating,
-                pdp_url,
-                developer,
-                created_at,
-                updated_at,
-                genre,
-                description
+            INSERT INTO game_products (
+                game_id,
+                game_source_site,
+                source_game_product_code,
+                game_name,
+                game_product_type,
+                game_rating,
+                game_pdp_url,
+                game_developer,
+                game_created_at,
+                game_updated_at,
+                game_genre,
+                game_description
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET
-                source_site = excluded.source_site,
-                source_product_code = excluded.source_product_code,
-                name = excluded.name,
-                product_type = excluded.product_type,
-                rating = excluded.rating,
-                pdp_url = excluded.pdp_url,
-                developer = excluded.developer,
-                updated_at = excluded.updated_at,
-                genre = excluded.genre,
-                description = excluded.description
+            ON CONFLICT(game_id) DO UPDATE SET
+                game_source_site = excluded.game_source_site,
+                source_game_product_code = excluded.source_game_product_code,
+                game_name = excluded.game_name,
+                game_product_type = excluded.game_product_type,
+                game_rating = excluded.game_rating,
+                game_pdp_url = excluded.game_pdp_url,
+                game_developer = excluded.game_developer,
+                game_updated_at = excluded.game_updated_at,
+                game_genre = excluded.game_genre,
+                game_description = excluded.game_description
             """,
             (
-                product.id,
-                product.source_site.value,
-                product.source_product_code,
-                product.name,
-                product.product_type,
-                product.rating,
-                product.pdp_url,
-                product.developer,
-                _dt(product.created_at),
-                _dt(product.updated_at),
-                json.dumps(product.genre) if product.genre is not None else None,
-                product.description,
+                game_product.game_id,
+                game_product.game_source_site.value,
+                game_product.source_game_product_code,
+                game_product.game_name,
+                game_product.game_product_type,
+                game_product.game_rating,
+                game_product.game_pdp_url,
+                game_product.game_developer,
+                _dt(game_product.game_created_at),
+                _dt(game_product.game_updated_at),
+                json.dumps(game_product.game_genre)
+                if game_product.game_genre is not None
+                else None,
+                game_product.game_description,
             ),
         )
 
@@ -120,8 +122,8 @@ class CategoryRepository:
         row = self._connection.execute(
             """
             SELECT 1
-            FROM categories
-            WHERE id = ?
+            FROM category_nodes
+            WHERE category_id = ?
             LIMIT 1
             """,
             (category_id,),
@@ -131,81 +133,81 @@ class CategoryRepository:
     def upsert(self, category: CategoryNode) -> None:
         self._connection.execute(
             """
-            INSERT INTO categories (
-                id,
-                source_site,
+            INSERT INTO category_nodes (
+                category_id,
+                category_source_site,
                 source_category_code,
-                name,
-                url,
-                path,
-                parent_id,
-                level,
-                is_leaf,
-                created_at,
-                updated_at
+                category_name,
+                category_url,
+                category_path,
+                category_parent_id,
+                category_level,
+                category_is_leaf,
+                category_created_at,
+                category_updated_at
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET
-                source_site = excluded.source_site,
+            ON CONFLICT(category_id) DO UPDATE SET
+                category_source_site = excluded.category_source_site,
                 source_category_code = excluded.source_category_code,
-                name = excluded.name,
-                url = excluded.url,
-                path = excluded.path,
-                parent_id = excluded.parent_id,
-                level = excluded.level,
-                is_leaf = excluded.is_leaf,
-                updated_at = excluded.updated_at
+                category_name = excluded.category_name,
+                category_url = excluded.category_url,
+                category_path = excluded.category_path,
+                category_parent_id = excluded.category_parent_id,
+                category_level = excluded.category_level,
+                category_is_leaf = excluded.category_is_leaf,
+                category_updated_at = excluded.category_updated_at
             """,
             (
-                category.id,
-                category.source_site.value,
+                category.category_id,
+                category.category_source_site.value,
                 category.source_category_code,
-                category.name,
-                category.url,
-                category.path,
-                category.parent_id,
-                category.level,
-                _bool_to_int(category.is_leaf),
-                _dt(category.created_at),
-                _dt(category.updated_at),
+                category.category_name,
+                category.category_url,
+                category.category_path,
+                category.category_parent_id,
+                category.category_level,
+                _bool_to_int(category.category_is_leaf),
+                _dt(category.category_created_at),
+                _dt(category.category_updated_at),
             ),
         )
 
 
-class ProductCategoryRepository:
+class GameProductCategoryRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-    def upsert(self, link: ProductCategoryLink) -> None:
+    def upsert(self, link: GameProductCategoryLink) -> None:
         self._connection.execute(
             """
-            INSERT INTO product_categories (
-                source_product_id,
+            INSERT INTO game_product_categories (
+                game_product_id,
                 category_id,
                 created_at
             )
             VALUES (?, ?, ?)
-            ON CONFLICT(source_product_id, category_id) DO NOTHING
+            ON CONFLICT(game_product_id, category_id) DO NOTHING
             """,
             (
-                link.source_product_id,
+                link.game_product_id,
                 link.category_id,
                 _dt(link.created_at),
             ),
         )
 
 
-class ProductSnapshotRepository:
+class GameProductSnapshotRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-    def insert(self, snapshot: ProductSnapshot) -> None:
+    def insert(self, snapshot: GameProductSnapshot) -> None:
         created_at = snapshot.created_at or datetime.utcnow()
 
         self._connection.execute(
             """
-            INSERT INTO product_snapshots (
-                source_product_id,
+            INSERT INTO game_product_snapshots (
+                game_product_id,
                 run_id,
                 observed_at,
                 current_price,
@@ -219,7 +221,7 @@ class ProductSnapshotRepository:
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                snapshot.source_product_id,
+                snapshot.game_product_id,
                 snapshot.run_id,
                 _dt(snapshot.observed_at),
                 _decimal_to_str(snapshot.current_price),
