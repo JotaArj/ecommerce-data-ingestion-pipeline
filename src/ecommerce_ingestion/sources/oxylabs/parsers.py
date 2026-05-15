@@ -5,7 +5,7 @@ from decimal import Decimal, InvalidOperation
 
 from playwright.sync_api import Page
 
-from ecommerce_ingestion.config.constants import OXILABS_URL_CATEGORY_PREFIX
+from ecommerce_ingestion.config.constants import OXYLABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.domain.enums import Currency, SourceSite, StockStatus
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
@@ -79,7 +79,7 @@ class Parsers:
                 category_source_site=SourceSite.OXYLABS_SANDBOX,
                 source_category_code=category_url,
                 category_name=category_url,
-                category_url=OXILABS_URL_CATEGORY_PREFIX + category_url,
+                category_url=OXYLABS_URL_CATEGORY_PREFIX + category_url,
                 category_path=category_url,
                 category_parent_id=None,
                 category_level=1,
@@ -99,7 +99,7 @@ class Parsers:
                 category_source_site=SourceSite.OXYLABS_SANDBOX,
                 source_category_code=subcategory_url,
                 category_name=subcategory,
-                category_url=OXILABS_URL_CATEGORY_PREFIX + subcategory_url,
+                category_url=OXYLABS_URL_CATEGORY_PREFIX + subcategory_url,
                 category_path=subcategory_url,
                 category_parent_id=parent_id,
                 category_level=2,
@@ -113,7 +113,7 @@ class Parsers:
 
     @staticmethod
     def parse_products(
-        page: Page, json: dict[str, object], run_id: str
+        page: Page, payload: dict[str, object], run_id: str
     ) -> tuple[
         list[GameProduct],
         list[GameProductSnapshot],
@@ -127,7 +127,7 @@ class Parsers:
         game_genres: list[GameGenre] = []
         game_genre_links: list[GameGenreLink] = []
 
-        page_props = json.get("pageProps")
+        page_props = payload.get("pageProps")
         if not isinstance(page_props, dict):
             return game_products, game_product_snapshots, game_product_category_links, game_genres, game_genre_links  # noqa: E501
 

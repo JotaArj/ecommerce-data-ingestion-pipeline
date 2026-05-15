@@ -12,9 +12,7 @@ authors = [
     { name = "Jacinto Arjona Garrido" }
 ]
 dependencies = [
-    "loguru==0.7.2",
     "playwright==1.43.0",
-    "pydantic==2.7.1",
     "python-dotenv==1.0.1",
 ]
 

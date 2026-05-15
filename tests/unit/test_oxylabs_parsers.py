@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import cast
+
+from playwright.sync_api import Page
 
 from ecommerce_ingestion.domain.enums import Currency
 from ecommerce_ingestion.sources.oxylabs.parsers import Parsers
@@ -27,7 +30,7 @@ class _FakePage:
 
 def test_parse_products_reads_price_from_price_wrapper() -> None:
     page = _FakePage(["91,99 €"])
-    payload = {
+    payload: dict[str, object] = {
         "pageProps": {
             "products": [
                 {
@@ -43,7 +46,7 @@ def test_parse_products_reads_price_from_price_wrapper() -> None:
     }
 
     game_products, snapshots, links, genres, genre_links = Parsers.parse_products(
-        page, payload, "run-1"
+        cast(Page, page), payload, "run-1"
     )
 
     assert page.selectors == [PRICE_SELECTOR]

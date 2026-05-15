@@ -7,7 +7,7 @@ from uuid import uuid4
 from playwright.sync_api import Page
 
 from ecommerce_ingestion.browser.playwright_factory import PlaywrightFactory
-from ecommerce_ingestion.config.constants import OXILABS_URL_CATEGORY_PREFIX
+from ecommerce_ingestion.config.constants import OXYLABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.config.settings import Settings
 from ecommerce_ingestion.db.repositories import (
     CategoryRepository,
@@ -72,8 +72,12 @@ def run_catalog(settings: Settings) -> None:
                     for category_node in category_nodes:
                         category_repository.upsert(category_node)
 
-                    json = capture_products_json_from_navigation(settings, page, 1)
-                    total_pages, products_per_page = _capture_atributes_from_json(json)
+                    products_payload = capture_products_payload_from_navigation(
+                        settings, page, 1
+                    )
+                    total_pages, products_per_page = (
+                        _capture_attributes_from_payload(products_payload)
+                    )
                     logger.info(
                         "Catalog has %s pages with %s products per page",
                         total_pages,
@@ -81,7 +85,7 @@ def run_catalog(settings: Settings) -> None:
                     )
 
                     for page_number in range(1, total_pages + 1):
-                        json = capture_products_json_from_navigation(
+                        products_payload = capture_products_payload_from_navigation(
                             settings, page, page_number
                         )
                         (
@@ -90,7 +94,9 @@ def run_catalog(settings: Settings) -> None:
                             game_product_category_links,
                             game_genres,
                             game_genre_links,
-                        ) = _discover_products_from_json(page, run.id, json)
+                        ) = _discover_products_from_payload(
+                            page, run.id, products_payload
+                        )
 
                         for game_product in game_products:
                             game_product_repository.upsert(game_product)
@@ -198,7 +204,7 @@ def _discover_categories_for_source(
     )
 
 
-def capture_products_json_from_navigation(
+def capture_products_payload_from_navigation(
     settings: Settings, page: Page, num_page: int
 ) -> dict[str, object]:
     with page.expect_response(
@@ -230,8 +236,8 @@ def capture_products_json_from_navigation(
     }
 
 
-def _capture_atributes_from_json(json: dict[str, object]) -> tuple[int, int]:
-    page_props: object = json["pageProps"]
+def _capture_attributes_from_payload(payload: dict[str, object]) -> tuple[int, int]:
+    page_props: object = payload["pageProps"]
     if not isinstance(page_props, dict):
         raise ValueError("Expected pageProps to be an object")
 
@@ -243,8 +249,8 @@ def _capture_atributes_from_json(json: dict[str, object]) -> tuple[int, int]:
     return page_count, per_page
 
 
-def _discover_products_from_json(
-    page: Page, run_id: str, json: dict[str, object]
+def _discover_products_from_payload(
+    page: Page, run_id: str, payload: dict[str, object]
 ) -> tuple[
     list[GameProduct],
     list[GameProductSnapshot],
@@ -254,7 +260,7 @@ def _discover_products_from_json(
 ]:
     discovery = Discovery(page)
 
-    return discovery.discover_products(json, run_id)
+    return discovery.discover_products(payload, run_id)
 
 
 def _ensure_category_exists(
@@ -303,7 +309,7 @@ def _category_from_id(
         category_source_site=settings.source_site,
         source_category_code=path,
         category_name=category_name,
-        category_url=OXILABS_URL_CATEGORY_PREFIX + path,
+        category_url=OXYLABS_URL_CATEGORY_PREFIX + path,
         category_path=path,
         category_parent_id=parent_id,
         category_level=len(path_parts),

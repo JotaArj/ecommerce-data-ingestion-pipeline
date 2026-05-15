@@ -1,7 +1,10 @@
-loguru==0.7.2
 playwright==1.43.0
-pydantic==2.7.1
 python-dotenv==1.0.1
 ipykernel==6.25.0
 pandas==2.0.3
 pyarrow==24.0.0
+black==24.4.2
+isort==5.13.2
+mypy==1.10.0
+pytest==8.2.0
+ruff==0.4.4

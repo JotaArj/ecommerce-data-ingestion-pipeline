@@ -25,6 +25,6 @@ DEFAULT_HEADLESS = True
 DEFAULT_LOG_LEVEL = "INFO"
 
 OXYLABS_CATEGORY_START_PATH = "/products/category/"
-OXILABS_URL_CATEGORY_PREFIX = "https://oxylabs.io/products/category/"
+OXYLABS_URL_CATEGORY_PREFIX = "https://oxylabs.io/products/category/"
 
 DEFAULT_SCRAP_URL = "https://sandbox.oxylabs.io/products?page="
