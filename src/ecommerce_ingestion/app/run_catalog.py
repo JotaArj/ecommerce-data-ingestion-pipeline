@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
 from math import ceil
 from uuid import uuid4
 
@@ -8,7 +7,9 @@ from playwright.sync_api import Page
 
 from ecommerce_ingestion.browser.playwright_factory import PlaywrightFactory
 from ecommerce_ingestion.config.constants import OXYLABS_URL_CATEGORY_PREFIX
-from ecommerce_ingestion.config.settings import Settings
+from ecommerce_ingestion.config.logging_config import configure_logging
+from ecommerce_ingestion.config.settings import Settings, load_scrapper_settings
+from ecommerce_ingestion.db.init_db import initialize_database_if_missing
 from ecommerce_ingestion.db.repositories import (
     CategoryRepository,
     GameGenreGameLinkRepository,
@@ -35,9 +36,10 @@ from ecommerce_ingestion.sources.oxylabs.selectors import PRICE_SELECTOR
 
 logger = logging.getLogger(__name__)
 
-
-def run_catalog(settings: Settings) -> None:
-    _configure_logging(settings)
+def run_catalog(source_site: SourceSite) -> None:
+    settings = load_scrapper_settings(source_site)
+    initialize_database_if_missing(settings)
+    configure_logging(settings)
     database = build_database(settings)
     run = ScraperRun(
         id=str(uuid4()),
@@ -157,27 +159,6 @@ def run_catalog(settings: Settings) -> None:
         _save_run(database, run)
         logger.exception("Catalog run %s failed", run.id)
         raise
-
-
-def _configure_logging(settings: Settings) -> None:
-    settings.log_file_path.parent.mkdir(parents=True, exist_ok=True)
-    root_logger = logging.getLogger()
-    root_logger.handlers.clear()
-    root_logger.setLevel(settings.log_level)
-
-    formatter = logging.Formatter(
-        "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-    )
-    file_handler = RotatingFileHandler(
-        settings.log_file_path,
-        maxBytes=10 * 1024 * 1024,
-        backupCount=5,
-        encoding="utf-8",
-    )
-    file_handler.setLevel(settings.log_level)
-    file_handler.setFormatter(formatter)
-    root_logger.addHandler(file_handler)
-
 
 def _save_run(database: SQLiteDatabase, run: ScraperRun) -> None:
     with database.session() as connection:

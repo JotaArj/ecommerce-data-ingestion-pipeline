@@ -4,8 +4,8 @@ from ecommerce_ingestion.domain.enums import SourceSite
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
-DB_OUTPUT_DIR = PROJECT_ROOT / "output"
-DB_OUTPUT_BRONZE = DB_OUTPUT_DIR / "bronze"
+DB_OUTPUT_DIR = PROJECT_ROOT / "data"
+DB_OUTPUT_BRONZE = DB_OUTPUT_DIR / "raw"
 DB_OUTPUT_SILVER = DB_OUTPUT_DIR / "silver"
 DB_OUTPUT_GOLD = DB_OUTPUT_DIR / "gold"
 
@@ -19,6 +19,7 @@ SOURCE_BASE_URLS: dict[SourceSite, str] = {
     ),
 }
 
+DEFAULT_SOURCE_SITE = SourceSite.OXYLABS_SANDBOX
 DEFAULT_BASE_URL = SOURCE_BASE_URLS[SourceSite.OXYLABS_SANDBOX]
 
 DEFAULT_HEADLESS = True

@@ -1,12 +1,13 @@
-from ecommerce_ingestion.app.run_catalog import run_catalog
-from ecommerce_ingestion.config.settings import load_settings
-from ecommerce_ingestion.db.init_db import initialize_database_if_missing
+#from ecommerce_ingestion.app.run_catalog import run_catalog
+#from ecommerce_ingestion.config.constants import DEFAULT_SOURCE_SITE
+from ecommerce_ingestion.app.run_silver import run_silver
 
 
 def main() -> None:
-    settings = load_settings()
-    initialize_database_if_missing(settings)
-    run_catalog(settings)
+
+    #run_catalog(DEFAULT_SOURCE_SITE)
+    run_silver()
+
 
 
 if __name__ == "__main__":

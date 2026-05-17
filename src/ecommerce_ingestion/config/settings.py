@@ -46,7 +46,7 @@ class Settings:
     log_file_path: Path
 
 
-def load_settings() -> Settings:
+def load_scrapper_settings(source_site: SourceSite) -> Settings:
     source_site = SourceSite(
         os.getenv("SOURCE_SITE", SourceSite.OXYLABS_SANDBOX.value)
     )
@@ -65,5 +65,23 @@ def load_settings() -> Settings:
         log_file_path=_get_path(
             os.getenv("LOG_FILE_PATH"),
             _default_log_file_path(source_name),
+        )
+    )
+
+def load_silver_settings() -> Settings:
+    source_site = SourceSite(
+        os.getenv("SOURCE_SITE", SourceSite.SILVER_DATA_PROCESSING.value)
+    )
+    return Settings(
+        source_site = source_site,
+        base_url="",
+        start_scraping_url="",
+        headless=False,
+        db_path = Path(""),
+        log_level=os.getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL),
+        log_file_path=_get_path(
+            os.getenv("LOG_FILE_PATH"),
+            LOGS_DIR / 
+            f"silver_data_processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
         ),
     )
