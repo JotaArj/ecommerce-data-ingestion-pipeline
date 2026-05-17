@@ -6,11 +6,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from ecommerce_ingestion.config.constants import (
-    DB_OUTPUT_BRONZE,
+    BRONZE_DIR,
     DEFAULT_BASE_URL,
     DEFAULT_HEADLESS,
     DEFAULT_LOG_LEVEL,
-    DEFAULT_SCRAP_URL,
+    DEFAULT_SCRAPING_URL,
     LOGS_DIR,
 )
 from ecommerce_ingestion.domain.enums import SourceSite
@@ -55,11 +55,11 @@ def load_scrapper_settings(source_site: SourceSite) -> Settings:
     return Settings(
         source_site=source_site,
         base_url=os.getenv("BASE_URL", DEFAULT_BASE_URL),
-        start_scraping_url=os.getenv("START_SCRAPING_URL", DEFAULT_SCRAP_URL),
+        start_scraping_url=os.getenv("START_SCRAPING_URL", DEFAULT_SCRAPING_URL),
         headless=_get_bool(os.getenv("HEADLESS"), DEFAULT_HEADLESS),
         db_path=_get_path(
             os.getenv("DB_PATH"),
-            DB_OUTPUT_BRONZE / f"{source_name}_scraper.db",
+            BRONZE_DIR / f"{source_name}_scraper.db",
         ),
         log_level=os.getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL),
         log_file_path=_get_path(
@@ -83,5 +83,23 @@ def load_silver_settings() -> Settings:
             os.getenv("LOG_FILE_PATH"),
             LOGS_DIR / 
             f"silver_data_processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+        ),
+    )
+
+def load_gold_settings() -> Settings:
+    source_site = SourceSite(
+        os.getenv("SOURCE_SITE", SourceSite.GOLD_DATA_PROCESSING.value)
+    )
+    return Settings(
+        source_site = source_site,
+        base_url="",
+        start_scraping_url="",
+        headless=False,
+        db_path = Path(""),
+        log_level=os.getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL),
+        log_file_path=_get_path(
+            os.getenv("LOG_FILE_PATH"),
+            LOGS_DIR / 
+            f"gold_data_processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
         ),
     )

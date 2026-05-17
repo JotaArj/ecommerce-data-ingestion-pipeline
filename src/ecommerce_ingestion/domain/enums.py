@@ -6,7 +6,7 @@ class SourceSite(StrEnum):
     OXYLABS_SANDBOX = "oxylabs_sandbox"
     WEBSCRAPER_ECOMMERCE_AJAX = "webscraper_ecommerce_ajax"
     SILVER_DATA_PROCESSING = "silver_data_processing"
-
+    GOLD_DATA_PROCESSING = "gold_data_processing"
 
 class RunType(StrEnum):
 

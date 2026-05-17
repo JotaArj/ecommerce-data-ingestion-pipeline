@@ -1,6 +1,6 @@
+from ecommerce_ingestion.config.constants import SILVER_SELECT_COLUMNS
 
-
-PRODUCT_QUERY_JOINED = """
+PRODUCT_QUERY_JOINED = f"""
     WITH genre_links_grouped AS (
     SELECT
         game_id,
@@ -19,30 +19,7 @@ PRODUCT_QUERY_JOINED = """
         )
     )
     SELECT
-        p.game_id,
-        p.game_source_site,
-        p.source_game_product_code,
-        p.game_name,
-        p.game_product_type,
-        p.game_rating,
-        p.game_pdp_url,
-        p.game_developer,
-        p.game_description,
-        g.genres,
-        gpc.category_id, 
-        gc.category_source_site, 
-        gc.source_category_code, 
-        gc.category_name, 
-        gc.category_url, 
-        gc.category_path, 
-        gc.category_parent_id, 
-        gc.category_level, 
-        gc.category_is_leaf, 
-        gpsl.current_price,
-        gpsl.currency,
-        gpsl.stock_status,
-        gpsl.meta_score,
-        gpsl.user_score
+       {", ".join(SILVER_SELECT_COLUMNS)}
     FROM game_products AS p
     LEFT JOIN genre_links_grouped AS g
         ON p.game_id = g.game_id
