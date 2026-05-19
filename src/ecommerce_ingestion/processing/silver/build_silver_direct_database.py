@@ -3,10 +3,12 @@ import sqlite3
 
 import pandas as pd
 
-from ecommerce_ingestion.config.constants import (
+from ecommerce_ingestion.config.paths import (
     BRONZE_DATABASE_FILENAME,
     BRONZE_DIR,
     SILVER_DIR,
+)
+from ecommerce_ingestion.config.silver_config import (
     SILVER_TABLE_EXPORTS,
 )
 

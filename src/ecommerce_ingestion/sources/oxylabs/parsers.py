@@ -5,11 +5,8 @@ from decimal import Decimal, InvalidOperation
 
 from playwright.sync_api import Page
 
-from ecommerce_ingestion.config.constants import (
-    OXYLABS_URL_CATEGORY_PREFIX,
-    PLATFORM_CATEGORY_PATHS,
-    REGEX_ALPHANUM,
-)
+from ecommerce_ingestion.config.mappers import PLATFORM_CATEGORY_PATHS, REGEX_ALPHANUM
+from ecommerce_ingestion.config.source_config import OXYLABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.domain.enums import Currency, SourceSite, StockStatus
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
@@ -220,10 +217,14 @@ class Parsers:
 
     @staticmethod
     def _build_game_product_id(game_name: str, category_id: str) -> str:
-        text = f"{game_name}__{category_id}"
-        return (re.sub(REGEX_ALPHANUM, "_", text.lower())
-        .strip("_")
-    )
+        return (
+            f"{Parsers._slugify_id_part(game_name)}"
+            f"__{Parsers._slugify_id_part(category_id)}"
+        )
+
+    @staticmethod
+    def _slugify_id_part(value: str) -> str:
+        return re.sub(REGEX_ALPHANUM, "_", value.lower()).strip("_")
 
     @staticmethod
     def _parse_genre(value: object) -> list[str] | None:

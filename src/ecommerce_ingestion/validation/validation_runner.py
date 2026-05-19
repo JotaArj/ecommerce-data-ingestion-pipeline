@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from ecommerce_ingestion.config.constants import SILVER_COLUMNS_REQUIRED
+from ecommerce_ingestion.config.silver_config import SILVER_COLUMNS_REQUIRED
 from ecommerce_ingestion.validation.silver_validations import (
     critical_null_checker,
     duplicate_checker,

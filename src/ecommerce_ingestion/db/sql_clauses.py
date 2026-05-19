@@ -1,4 +1,4 @@
-from ecommerce_ingestion.config.constants import SILVER_SELECT_COLUMNS
+from ecommerce_ingestion.config.silver_config import SILVER_SELECT_COLUMNS
 
 PRODUCT_QUERY_JOINED = f"""
     WITH genre_links_grouped AS (

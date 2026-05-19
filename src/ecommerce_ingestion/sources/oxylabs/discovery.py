@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
 
-from ecommerce_ingestion.config.constants import OXYLABS_CATEGORY_START_PATH
+from ecommerce_ingestion.config.source_config import OXYLABS_CATEGORY_START_PATH
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
     GameGenre,

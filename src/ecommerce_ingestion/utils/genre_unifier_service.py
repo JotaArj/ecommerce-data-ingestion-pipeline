@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ecommerce_ingestion.config.constants import GENRE_MAPPER
+from ecommerce_ingestion.config.mappers import GENRE_MAPPER
 
 
 def map_genre(tag: str) -> tuple[str, int]:

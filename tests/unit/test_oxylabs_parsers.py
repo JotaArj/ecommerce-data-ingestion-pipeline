@@ -53,7 +53,7 @@ def test_parse_products_reads_price_from_price_wrapper() -> None:
     assert [genre.genre_id for genre in genres] == ["action adventure", "fantasy"]
     assert [link.genre_id for link in genre_links] == ["action adventure", "fantasy"]
     assert game_products[0].game_id == (
-        "the legend of zelda: ocarina of time::nintendo/nintendo-64"
+        "the_legend_of_zelda_ocarina_of_time__nintendo_nintendo_64"
     )
     assert game_products[0].game_name == "The Legend of Zelda: Ocarina of Time"
     assert snapshots[0].game_product_id == game_products[0].game_id
@@ -92,18 +92,18 @@ def test_parse_products_creates_one_product_per_category() -> None:
     )
 
     assert [product.game_id for product in game_products] == [
-        "shared game::nintendo/switch",
-        "shared game::playstation-platform/ps5",
+        "shared_game__nintendo_switch",
+        "shared_game__playstation_platform_ps5",
     ]
     assert [snapshot.game_product_id for snapshot in snapshots] == [
-        "shared game::nintendo/switch",
-        "shared game::playstation-platform/ps5",
+        "shared_game__nintendo_switch",
+        "shared_game__playstation_platform_ps5",
     ]
     assert [link.category_id for link in links] == [
         "nintendo/switch",
         "playstation-platform/ps5",
     ]
     assert [link.game_id for link in genre_links] == [
-        "shared game::nintendo/switch",
-        "shared game::playstation-platform/ps5",
+        "shared_game__nintendo_switch",
+        "shared_game__playstation_platform_ps5",
     ]

@@ -5,13 +5,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from ecommerce_ingestion.config.constants import (
-    BRONZE_DIR,
+from ecommerce_ingestion.config.paths import BRONZE_DIR, LOGS_DIR
+from ecommerce_ingestion.config.source_config import (
     DEFAULT_BASE_URL,
     DEFAULT_HEADLESS,
     DEFAULT_LOG_LEVEL,
     DEFAULT_SCRAPING_URL,
-    LOGS_DIR,
 )
 from ecommerce_ingestion.domain.enums import SourceSite
 

@@ -6,9 +6,9 @@ from uuid import uuid4
 from playwright.sync_api import Page
 
 from ecommerce_ingestion.browser.playwright_factory import PlaywrightFactory
-from ecommerce_ingestion.config.constants import OXYLABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.config.logging_config import configure_logging
 from ecommerce_ingestion.config.settings import Settings, load_scrapper_settings
+from ecommerce_ingestion.config.source_config import OXYLABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.db.init_db import initialize_database_if_missing
 from ecommerce_ingestion.db.repositories import (
     CategoryRepository,

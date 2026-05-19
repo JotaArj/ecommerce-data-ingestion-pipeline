@@ -1,8 +1,8 @@
 import logging
 
-from ecommerce_ingestion.config.constants import SILVER_TABLE_EXPORTS
 from ecommerce_ingestion.config.logging_config import configure_logging
 from ecommerce_ingestion.config.settings import load_log_settings
+from ecommerce_ingestion.config.silver_config import SILVER_TABLE_EXPORTS
 from ecommerce_ingestion.processing.silver.build_silver_direct_database import (
     SilverTableExporter,
 )

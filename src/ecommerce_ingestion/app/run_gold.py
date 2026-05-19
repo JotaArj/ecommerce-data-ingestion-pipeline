@@ -1,10 +1,8 @@
 import logging
 
-from ecommerce_ingestion.config.constants import (
-    GOLD_TABLE_IMPORTS,
-    SILVER_DIR,
-)
+from ecommerce_ingestion.config.gold_config import GOLD_TABLE_IMPORTS
 from ecommerce_ingestion.config.logging_config import configure_logging
+from ecommerce_ingestion.config.paths import SILVER_DIR
 from ecommerce_ingestion.config.settings import load_log_settings
 from ecommerce_ingestion.processing.gold.build_genre_extension_table import (
     GenreExtensionTable,
@@ -24,7 +22,8 @@ def run_gold() -> None:
     genre_extension_builder = GenreExtensionTable()
     table_dict = load_dict_table(GOLD_TABLE_IMPORTS, SILVER_DIR)
     table_dict["game_genre_extension"] = genre_extension_builder.build(
-        table_dict["game_genre"])
-    data_game_catalog = game_catalog_builder.build(table_dict)
+        table_dict["game_genre"]
+    )
+    game_catalog_builder.build(table_dict)
 
     logger.info("Starting gold data processing.")
