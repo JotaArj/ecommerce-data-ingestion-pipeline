@@ -18,13 +18,14 @@ def load_table(nametable: str, data_path: Path) -> pd.DataFrame:
 
 def save_table(data_table_name: str, data: pd.DataFrame, dir_path: Path) -> None:
     try:
-        data.to_parquet(dir_path, index= False)
+        dir_path.mkdir(parents=True, exist_ok=True)
+        data.to_parquet(dir_path / data_table_name, index=False)
         logger.info(f"{data_table_name} data: correctly saved")
     except Exception as e:
-        logger.error(f"Error while reading {data_table_name} parquet file: {e}")
+        logger.error(f"Error while saving {data_table_name} parquet file: {e}")
         raise
 
-def load_dict_table(table_dict: dict[str,str]
+def load_dict_table(table_dict: dict[str, str]
                     , path_dir: Path) -> dict[str, pd.DataFrame]:
     data_dict = {}
     for name_table, table_path in table_dict.items():
