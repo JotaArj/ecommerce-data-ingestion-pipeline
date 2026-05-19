@@ -2,18 +2,25 @@ import logging
 
 import pandas as pd
 
-from ecommerce_ingestion.config.constants import DB_OUTPUT_GOLD, DB_OUTPUT_SILVER
-
 logger = logging.getLogger(__name__)
-
-class build_gold_game_catalog:
-    def build(self) -> None:
+class GoldGameCatalogBuilder:
+    def build(self, data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame:
         logger.info("Starting to build silver products dataset.")
-        try:
-            data_products = pd.read_parquet(DB_OUTPUT_SILVER / 
-                                            "silver_cleaned_data.parquet")
-            logging.info(f"Columns in cleaned data: {data_products.columns.tolist()}")
-        except Exception as e:
-            logger.error(f"Error while reading silver_cleaned_data parquet file: {e}")
+        ## joinear links con genre_extension
+        ## dropear duplicados id, mapped_genre
+        ## Rankear pr game_id, y priority
+        ## Descartar ranks 4 o mas
+        ## pivotar tabla para obtener los 3 generos principales
+        ## rellenar con unknowns lo que salga nulo
+        ## joinear tabla con products
+        ## salvar tabla completa
+        ## dropear columnas innecesarias
+        ## crear score y price bucket
+        ## salvar tabla final
+        data = pd.DataFrame
+        return data
+    
 
+    
+    
     

@@ -243,6 +243,11 @@ SILVER_PRODUCTS_FILENAME = "silver_cleaned_data.parquet"
 SILVER_TABLE_EXPORTS: dict[str, str] = {
     "game_genre_game_link": "silver_game_genre_relationships.parquet",
     "game_product_snapshots": "silver_snapshots.parquet",
+    "game_genre": "silver_game_genre.parquet"
+}
+
+GOLD_TABLE_IMPORTS: dict[str, str] = SILVER_TABLE_EXPORTS | {
+    "game_products" : SILVER_PRODUCTS_FILENAME
 }
 
 SOURCE_BASE_URLS: dict[SourceSite, str] = {
