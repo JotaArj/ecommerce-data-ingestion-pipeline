@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
+from typing import TypedDict
 
 from ecommerce_ingestion.domain.enums import (
     Currency,
@@ -80,3 +81,9 @@ class GameGenre:
 class GameGenreLink:
     game_id: str
     genre_id: str
+
+class ValidationConfig(TypedDict):
+    required_columns: list[str]
+    critical_null_columns: list[str]
+    id_columns: str
+    number_column_list: list[tuple[str, float | None, float | None]]

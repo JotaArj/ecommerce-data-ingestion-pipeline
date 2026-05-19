@@ -10,9 +10,10 @@ from ecommerce_ingestion.config.paths import (
 )
 from ecommerce_ingestion.config.silver_config import (
     SILVER_PRODUCTS_FILENAME,
+    SILVER_VALIDATION_CONFIG,
 )
 from ecommerce_ingestion.db.sql_clauses import PRODUCT_QUERY_JOINED
-from ecommerce_ingestion.validation.validation_runner import run_silver_validations
+from ecommerce_ingestion.validation.validation_runner import run_validations
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,9 @@ class SilverProductsBuilder:
             self.close_connections()
             raise
 
-        run_silver_validations(data_products)
+        run_validations(SILVER_PRODUCTS_FILENAME, 
+                        data_products, 
+                        SILVER_VALIDATION_CONFIG[SILVER_PRODUCTS_FILENAME])
 
         logger.info(
             "Saved %s correctly. Total saved: %s rows, %s columns.",

@@ -1,4 +1,4 @@
-from ecommerce_ingestion.config.silver_config import SILVER_SELECT_COLUMNS
+from ecommerce_ingestion.config.silver_config import SILVER_PRODUCT_SELECT_COLUMNS
 
 PRODUCT_QUERY_JOINED = f"""
     WITH genre_links_grouped AS (
@@ -19,7 +19,7 @@ PRODUCT_QUERY_JOINED = f"""
         )
     )
     SELECT
-       {", ".join(SILVER_SELECT_COLUMNS)}
+       {", ".join(SILVER_PRODUCT_SELECT_COLUMNS)}
     FROM game_products AS p
     LEFT JOIN genre_links_grouped AS g
         ON p.game_id = g.game_id

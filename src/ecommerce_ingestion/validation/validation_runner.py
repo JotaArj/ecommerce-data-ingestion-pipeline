@@ -2,8 +2,8 @@ import logging
 
 import pandas as pd
 
-from ecommerce_ingestion.config.silver_config import SILVER_COLUMNS_REQUIRED
-from ecommerce_ingestion.validation.silver_validations import (
+from ecommerce_ingestion.domain.models import ValidationConfig
+from ecommerce_ingestion.validation.data_frame_validations import (
     critical_null_checker,
     duplicate_checker,
     unknown_ratio_warning,
@@ -14,35 +14,21 @@ from ecommerce_ingestion.validation.silver_validations import (
 
 logger = logging.getLogger(__name__)
 
-def run_silver_validations(data: pd.DataFrame) -> None:
-    logger.info("Starting silver data validations.")
+def run_validations(table_name: str, 
+                    data: pd.DataFrame, 
+                    validation_config: ValidationConfig) -> None:
+    logger.info(f"Starting {table_name} validations.")
     try:
-        validate_required_columns(data.columns.tolist(), SILVER_COLUMNS_REQUIRED)
-        validate_not_empty_dataset(len(data))
-        critical_null_checker(data, SILVER_COLUMNS_REQUIRED)
-        duplicate_checker(data, ["game_id","category_id"])
-        validate_number(data, 
-                        ["current_price", "user_score", "meta_score"], 
-                        min_value=0)
-        unknown_ratio_warning(data, data.columns)
+        validate_required_columns(data, 
+                                  validation_config["required_columns"])
+        validate_not_empty_dataset(data)
+        critical_null_checker(data, validation_config["critical_null_columns"])
+        duplicate_checker(data, validation_config["id_columns"])
+        for column in validation_config["number_column_list"]:
+            validate_number(data, column[0], column[1], column[2])
+        unknown_ratio_warning(data, data.columns.to_list())
     except Exception as e:
-        logger.error(f"Silver data validation failed: {e}")
+        logger.error(f"{table_name} validation failed: {e}")
         raise
 
-    logger.info("Finished silver data validations.")
-
-def run_gold_validations(data: pd.DataFrame) -> None:
-    logger.info("Starting silver data validations.")
-    try:
-        validate_required_columns(data.columns.tolist(), SILVER_COLUMNS_REQUIRED)
-        validate_not_empty_dataset(len(data))
-        critical_null_checker(data, SILVER_COLUMNS_REQUIRED)
-        duplicate_checker(data, ["game_id","category_id"])
-        validate_number(data, 
-                        ["current_price", "user_score", "meta_score"], 
-                        min_value=0)
-        unknown_ratio_warning(data, data.columns)
-    except Exception as e:
-        logger.error(f"Silver data validation failed: {e}")
-        raise
-    logger.info("Finished silver data validations.")
+    logger.info("Finished {table_name} validations.")

@@ -1,4 +1,8 @@
-SILVER_SELECT_COLUMNS = [
+from ecommerce_ingestion.domain.models import ValidationConfig
+
+SILVER_PRODUCTS_FILENAME = "silver_cleaned_data.parquet"
+
+SILVER_PRODUCT_SELECT_COLUMNS = [
     "p.game_id",
     "p.game_source_site",
     "p.source_game_product_code",
@@ -25,7 +29,7 @@ SILVER_SELECT_COLUMNS = [
     "gpsl.user_score",
 ]
 
-SILVER_COLUMNS_REQUIRED = [
+SILVER_PRODUCT_COLUMNS_REQUIRED = [
     "game_id",
     "game_source_site",
     "source_game_product_code",
@@ -52,7 +56,7 @@ SILVER_COLUMNS_REQUIRED = [
     "user_score",
 ]
 
-CRITICAL_COLUMNS = [
+SILVER_PRODUCT_CRITICAL_COLUMNS = [
     "game_id",
     "game_name",
     "category_id",
@@ -62,7 +66,23 @@ CRITICAL_COLUMNS = [
 
 DEFAULT_UNKNOWN_RATIO_THRESHOLD = 0.5
 
-SILVER_PRODUCTS_FILENAME = "silver_cleaned_data.parquet"
+SILVER_PRODUCT_NUMERIC_COLUMNS_VALUES: list[tuple[str, float | None, float| None]] = [
+        ("current_price", 0, None),
+        ("user_score", 0, None),
+        ("meta_score", 0, None)
+]
+
+SILVER_PRODUCT_VALIDATION_CONFIG : ValidationConfig = {
+    "required_columns" : SILVER_PRODUCT_COLUMNS_REQUIRED,
+    "critical_null_columns" : SILVER_PRODUCT_CRITICAL_COLUMNS,
+    "id_columns": "game_id",
+    "number_column_list": SILVER_PRODUCT_NUMERIC_COLUMNS_VALUES,
+}
+
+SILVER_VALIDATION_CONFIG : dict[str, ValidationConfig]= {
+    SILVER_PRODUCTS_FILENAME : SILVER_PRODUCT_VALIDATION_CONFIG
+}
+
 SILVER_TABLE_EXPORTS: dict[str, str] = {
     "game_genre_game_link": "silver_game_genre_relationships.parquet",
     "game_product_snapshots": "silver_snapshots.parquet",
