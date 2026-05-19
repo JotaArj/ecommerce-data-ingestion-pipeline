@@ -9,9 +9,6 @@ from ecommerce_ingestion.processing.silver.build_silver_direct_database import (
 from ecommerce_ingestion.processing.silver.build_silver_products import (
     SilverProductsBuilder,
 )
-from ecommerce_ingestion.validation.silver_validations import (
-    run_silver_validations,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +22,5 @@ def run_silver() -> None:
 
     for table_name in SILVER_TABLE_EXPORTS:
         SilverTableExporter().build(table_name)
-
-    run_silver_validations()
 
     logger.info("Finished silver data processing.")

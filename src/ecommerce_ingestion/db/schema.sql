@@ -21,9 +21,7 @@ CREATE TABLE IF NOT EXISTS game_products (
     game_developer TEXT,
     game_created_at TEXT NOT NULL,
     game_updated_at TEXT NOT NULL,
-    game_description TEXT,
-    UNIQUE (game_source_site, source_game_product_code),
-    UNIQUE (game_source_site, game_pdp_url)
+    game_description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS category_nodes (

@@ -56,6 +56,14 @@ SILVER_COLUMNS_REQUIRED = [
     "user_score",
 ]
 
+DEFAULT_UNKNOWN_RATIO_THRESHOLD = 0.5
+
+CRITICAL_COLUMNS = ["game_id", 
+    "game_name", 
+    "category_id", 
+    "current_price", 
+    "stock_status"]
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 DATA_DIR = PROJECT_ROOT / "data"

@@ -140,51 +140,60 @@ class Parsers:
             if not isinstance(data_product, dict):
                 continue
 
-            game_product_id = Parsers._optional_str(data_product.get("game_name"))
+            game_name = Parsers._optional_str(data_product.get("game_name"))
             source_game_product_code = Parsers._optional_str(data_product.get("id"))
             pdp_url = Parsers._optional_str(data_product.get("url"))
+            category_ids = Parsers._parse_category_ids(data_product.get("platform"))
             if (
-                game_product_id is None
+                game_name is None
                 or source_game_product_code is None
                 or pdp_url is None
+                or not category_ids
             ):
                 continue
 
             now = datetime.now()
             price_text = price_texts[index] if index < len(price_texts) else ""
             price, currency = Parsers._parse_price_and_currency(price_text)
+            genre_list = Parsers._parse_genre(data_product.get("genre"))
 
-            game_product = GameProduct(
-                game_id=game_product_id,
-                game_source_site=SourceSite.OXYLABS_SANDBOX,
-                source_game_product_code=source_game_product_code,
-                game_product_type=Parsers._optional_str(data_product.get("type")),
-                game_name=game_product_id,
-                game_rating=Parsers._optional_str(data_product.get("rating")),
-                game_developer=Parsers._optional_str(data_product.get("developer")),
-                game_pdp_url=pdp_url,
-                game_created_at=now,
-                game_updated_at=now,
-                game_description=Parsers._optional_str(data_product.get("description")),
-            )
-            game_products.append(game_product)
-
-            game_product_snapshot = GameProductSnapshot(
-                game_product_id=game_product_id,
-                run_id=run_id,
-                observed_at=now,
-                current_price=price,
-                original_price=price,
-                currency=currency,
-                stock_status=Parsers._parse_stock_status(data_product.get("inStock")),
-                meta_score=Parsers._parse_decimal(data_product.get("meta_score")),
-                user_score=Parsers._parse_decimal(data_product.get("user_score")),
-                created_at=now,
-            )
-            game_product_snapshots.append(game_product_snapshot)
-
-            category_ids = Parsers._parse_category_ids(data_product.get("platform"))
             for category_id in category_ids:
+                game_product_id = Parsers._build_game_product_id(
+                    game_name, category_id
+                )
+                game_product = GameProduct(
+                    game_id=game_product_id,
+                    game_source_site=SourceSite.OXYLABS_SANDBOX,
+                    source_game_product_code=source_game_product_code,
+                    game_product_type=Parsers._optional_str(data_product.get("type")),
+                    game_name=game_name,
+                    game_rating=Parsers._optional_str(data_product.get("rating")),
+                    game_developer=Parsers._optional_str(data_product.get("developer")),
+                    game_pdp_url=pdp_url,
+                    game_created_at=now,
+                    game_updated_at=now,
+                    game_description=Parsers._optional_str(
+                        data_product.get("description")
+                    ),
+                )
+                game_products.append(game_product)
+
+                game_product_snapshot = GameProductSnapshot(
+                    game_product_id=game_product_id,
+                    run_id=run_id,
+                    observed_at=now,
+                    current_price=price,
+                    original_price=price,
+                    currency=currency,
+                    stock_status=Parsers._parse_stock_status(
+                        data_product.get("inStock")
+                    ),
+                    meta_score=Parsers._parse_decimal(data_product.get("meta_score")),
+                    user_score=Parsers._parse_decimal(data_product.get("user_score")),
+                    created_at=now,
+                )
+                game_product_snapshots.append(game_product_snapshot)
+
                 game_product_category_links.append(
                     GameProductCategoryLink(
                         game_product_id=game_product_id,
@@ -193,16 +202,15 @@ class Parsers:
                     )
                 )
 
-            genre_list = Parsers._parse_genre(data_product.get("genre"))
-            if genre_list is not None:
-                for genre_id in genre_list:
-                    game_genre_links.append(
-                        GameGenreLink(
-                            game_id=game_product_id,
-                            genre_id=genre_id,
+                if genre_list is not None:
+                    for genre_id in genre_list:
+                        game_genre_links.append(
+                            GameGenreLink(
+                                game_id=game_product_id,
+                                genre_id=genre_id,
+                            )
                         )
-                    )
-                    game_genres.append(GameGenre(genre_id=genre_id))
+                        game_genres.append(GameGenre(genre_id=genre_id))
 
         return game_products, game_product_snapshots, game_product_category_links, game_genres, game_genre_links  # noqa: E501
 
@@ -250,6 +258,12 @@ class Parsers:
         if isinstance(value, int | float):
             return str(value)
         return None
+
+    @staticmethod
+    def _build_game_product_id(game_name: str, category_id: str) -> str:
+        normalized_game_name = " ".join(game_name.strip().lower().split())
+        normalized_category_id = category_id.strip().lower()
+        return f"{normalized_game_name}::{normalized_category_id}"
 
     @staticmethod
     def _parse_genre(value: object) -> list[str] | None:

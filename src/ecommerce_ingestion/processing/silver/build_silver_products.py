@@ -10,6 +10,7 @@ from ecommerce_ingestion.config.constants import (
     SILVER_PRODUCTS_FILENAME,
 )
 from ecommerce_ingestion.db.sql_clauses import PRODUCT_QUERY_JOINED
+from ecommerce_ingestion.validation.validation_runner import run_silver_validations
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,8 @@ class SilverProductsBuilder:
             logger.error(f"Error while saving cleaned data: {e}")
             self.close_connections()
             raise
+
+        run_silver_validations(data_products)
 
         logger.info(
             "Saved %s correctly. Total saved: %s rows, %s columns.",
