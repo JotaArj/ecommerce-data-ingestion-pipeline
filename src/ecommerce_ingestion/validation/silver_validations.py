@@ -56,12 +56,13 @@ def validate_number(data: pd.DataFrame,
     logger.info(f"All values in columns {column_list} are within the specified range.")
 
 
-def unknown_ratio_warning(data: pd.DataFrame, column: str) -> None:
+def unknown_ratio_warning(data: pd.DataFrame, column_list: list[str]) -> None:
     total_count = len(data)
-    unknown_count = (data[column] == "unknown").sum()
-    if total_count > 0:
-        unknown_ratio = unknown_count / total_count
-        logger.warning(f"Column '{column}' has {unknown_count} 'unknown' values "
-                       f"out of {total_count} total rows "
-                       f"({unknown_ratio:.2%} unknown ratio).")
+    for column in column_list:
+        unknown_count = (data[column] == "unknown").sum()
+        if unknown_count > 0 and unknown_count > 0:
+            unknown_ratio = unknown_count / total_count
+            logger.warning(f"Column '{column}' has {unknown_count} 'unknown' values "
+                           f"out of {total_count} total rows "
+                           f"({unknown_ratio:.2%} unknown ratio).")
         

@@ -24,7 +24,7 @@ def run_silver_validations(data: pd.DataFrame) -> None:
         validate_number(data, 
                         ["current_price", "user_score", "meta_score"], 
                         min_value=0)
-        unknown_ratio_warning(data, "game_developer")
+        unknown_ratio_warning(data, data.columns)
     except Exception as e:
         logger.error(f"Silver data validation failed: {e}")
         raise

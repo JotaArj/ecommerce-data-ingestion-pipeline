@@ -5,7 +5,11 @@ from decimal import Decimal, InvalidOperation
 
 from playwright.sync_api import Page
 
-from ecommerce_ingestion.config.constants import OXYLABS_URL_CATEGORY_PREFIX
+from ecommerce_ingestion.config.constants import (
+    OXYLABS_URL_CATEGORY_PREFIX,
+    PLATFORM_CATEGORY_PATHS,
+    REGEX_ALPHANUM,
+)
 from ecommerce_ingestion.domain.enums import Currency, SourceSite, StockStatus
 from ecommerce_ingestion.domain.models import (
     CategoryNode,
@@ -19,51 +23,6 @@ from ecommerce_ingestion.sources.oxylabs.selectors import PRICE_SELECTOR
 
 
 class Parsers:
-    PLATFORM_CATEGORY_PATHS = {
-        "3ds": "nintendo/3ds",
-        "dreamcast": "dreamcast",
-        "ds": "nintendo/ds",
-        "game-boy-advance": "nintendo/game-boy-advance",
-        "game boy advance": "nintendo/game-boy-advance",
-        "gamecube": "nintendo/gamecube",
-        "nintendo": "nintendo",
-        "nintendo 3ds": "nintendo/3ds",
-        "nintendo ds": "nintendo/ds",
-        "nintendo game boy advance": "nintendo/game-boy-advance",
-        "nintendo gamecube": "nintendo/gamecube",
-        "nintendo-64": "nintendo/nintendo-64",
-        "nintendo switch": "nintendo/switch",
-        "pc": "pc",
-        "playstation": "playstation-platform",
-        "playstation-1": "playstation-platform/playstation-1",
-        "playstation 2": "playstation-platform/ps2",
-        "playstation-2": "playstation-platform/playstation-2",
-        "playstation 3": "playstation-platform/ps3",
-        "playstation-3": "playstation-platform/playstation-3",
-        "playstation 4": "playstation-platform/ps4",
-        "playstation-4": "playstation-platform/playstation-4",
-        "playstation 5": "playstation-platform/ps5",
-        "playstation-5": "playstation-platform/playstation-5",
-        "playstation portable": "playstation-platform/psp",
-        "playstation-vita": "playstation-platform/playstation-vita",
-        "ps2": "playstation-platform/ps2",
-        "ps3": "playstation-platform/ps3",
-        "ps4": "playstation-platform/ps4",
-        "ps5": "playstation-platform/ps5",
-        "psp": "playstation-platform/psp",
-        "stadia": "stadia",
-        "switch": "nintendo/switch",
-        "wii": "nintendo/wii",
-        "wii u": "nintendo/wii-u",
-        "wii-u": "nintendo/wii-u",
-        "xbox": "xbox-platform",
-        "xbox-360": "xbox-platform/xbox-360",
-        "xbox 360": "xbox-platform/xbox-360",
-        "xbox-one": "xbox-platform/xbox-one",
-        "xbox one": "xbox-platform/xbox-one",
-        "xbox-series-x": "xbox-platform/xbox-series-x",
-        "xbox series x": "xbox-platform/xbox-series-x",
-    }
 
     @staticmethod
     def parse_categories(
@@ -261,9 +220,10 @@ class Parsers:
 
     @staticmethod
     def _build_game_product_id(game_name: str, category_id: str) -> str:
-        normalized_game_name = " ".join(game_name.strip().lower().split())
-        normalized_category_id = category_id.strip().lower()
-        return f"{normalized_game_name}::{normalized_category_id}"
+        text = f"{game_name}__{category_id}"
+        return (re.sub(REGEX_ALPHANUM, "_", text.lower())
+        .strip("_")
+    )
 
     @staticmethod
     def _parse_genre(value: object) -> list[str] | None:
@@ -287,7 +247,7 @@ class Parsers:
         platform_names = Parsers._parse_platform_names(platform)
         category_ids: list[str] = []
         for platform_name in platform_names:
-            category_path = Parsers.PLATFORM_CATEGORY_PATHS.get(
+            category_path = PLATFORM_CATEGORY_PATHS.get(
                 platform_name.strip().lower()
             )
             if category_path is not None:

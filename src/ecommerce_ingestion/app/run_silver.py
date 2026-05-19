@@ -2,7 +2,7 @@ import logging
 
 from ecommerce_ingestion.config.constants import SILVER_TABLE_EXPORTS
 from ecommerce_ingestion.config.logging_config import configure_logging
-from ecommerce_ingestion.config.settings import load_silver_settings
+from ecommerce_ingestion.config.settings import load_log_settings
 from ecommerce_ingestion.processing.silver.build_silver_direct_database import (
     SilverTableExporter,
 )
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_silver() -> None:
-    settings = load_silver_settings()
+    settings = load_log_settings("silver")
     configure_logging(settings)
 
     logger.info("Starting silver data processing.")

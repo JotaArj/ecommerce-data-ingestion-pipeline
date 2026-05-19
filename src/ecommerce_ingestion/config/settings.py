@@ -37,13 +37,14 @@ def _default_log_file_path(source_name: str) -> Path:
 
 @dataclass(slots=True)
 class Settings:
-    source_site: SourceSite
-    base_url: str
-    start_scraping_url: str
-    headless: bool
-    db_path: Path
     log_level: str
     log_file_path: Path
+    source_site: SourceSite | None = None
+    base_url: str | None = None
+    start_scraping_url: str | None = None
+    headless: bool | None = None
+    db_path: Path | None = None
+
 
 
 def load_scrapper_settings(source_site: SourceSite) -> Settings:
@@ -68,38 +69,12 @@ def load_scrapper_settings(source_site: SourceSite) -> Settings:
         )
     )
 
-def load_silver_settings() -> Settings:
-    source_site = SourceSite(
-        os.getenv("SOURCE_SITE", SourceSite.SILVER_DATA_PROCESSING.value)
-    )
+def load_log_settings(type_name: str) -> Settings:
     return Settings(
-        source_site = source_site,
-        base_url="",
-        start_scraping_url="",
-        headless=False,
-        db_path = Path(""),
         log_level=os.getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL),
         log_file_path=_get_path(
             os.getenv("LOG_FILE_PATH"),
             LOGS_DIR / 
-            f"silver_data_processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
-        ),
-    )
-
-def load_gold_settings() -> Settings:
-    source_site = SourceSite(
-        os.getenv("SOURCE_SITE", SourceSite.GOLD_DATA_PROCESSING.value)
-    )
-    return Settings(
-        source_site = source_site,
-        base_url="",
-        start_scraping_url="",
-        headless=False,
-        db_path = Path(""),
-        log_level=os.getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL),
-        log_file_path=_get_path(
-            os.getenv("LOG_FILE_PATH"),
-            LOGS_DIR / 
-            f"gold_data_processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+            f"{type_name}_data_processing_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
         ),
     )

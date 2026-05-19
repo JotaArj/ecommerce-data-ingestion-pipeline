@@ -52,6 +52,3 @@ class SilverTableExporter:
         except Exception as e:
             logger.error(f"Error while closing sqlite connection: {e}")
             raise
-
-
-build_silver_direct_database = SilverTableExporter
