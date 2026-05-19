@@ -7,7 +7,7 @@ from playwright.sync_api import Page
 
 from ecommerce_ingestion.browser.playwright_factory import PlaywrightFactory
 from ecommerce_ingestion.config.logging_config import configure_logging
-from ecommerce_ingestion.config.settings import Settings, load_scrapper_settings
+from ecommerce_ingestion.config.settings import ScraperSettings, load_scrapper_settings
 from ecommerce_ingestion.config.source_config import OXYLABS_URL_CATEGORY_PREFIX
 from ecommerce_ingestion.db.init_db import initialize_database_if_missing
 from ecommerce_ingestion.db.repositories import (
@@ -36,8 +36,8 @@ from ecommerce_ingestion.sources.oxylabs.selectors import PRICE_SELECTOR
 
 logger = logging.getLogger(__name__)
 
-def run_catalog(source_site: SourceSite) -> None:
-    settings = load_scrapper_settings(source_site)
+def run_catalog(source_site: SourceSite, run_name: str | None = None) -> None:
+    settings = load_scrapper_settings(source_site, run_name)
     initialize_database_if_missing(settings)
     configure_logging(settings)
     database = build_database(settings)
@@ -165,13 +165,13 @@ def _save_run(database: SQLiteDatabase, run: ScraperRun) -> None:
         RunRepository(connection).upsert(run)
 
 
-def _discover_categories(settings: Settings, page: Page) -> list[CategoryNode]:
+def _discover_categories(settings: ScraperSettings, page: Page) -> list[CategoryNode]:
     page.goto(settings.base_url, wait_until="domcontentloaded")
     return _discover_categories_for_source(page, settings)
 
 
 def _discover_categories_for_source(
-    page: Page, settings: Settings
+    page: Page, settings: ScraperSettings
 ) -> list[CategoryNode]:
     if settings.source_site is SourceSite.OXYLABS_SANDBOX:
         scraper = Scraper(page)
@@ -186,7 +186,7 @@ def _discover_categories_for_source(
 
 
 def capture_products_payload_from_navigation(
-    settings: Settings, page: Page, num_page: int
+    settings: ScraperSettings, page: Page, num_page: int
 ) -> dict[str, object]:
     with page.expect_response(
         lambda response: "/api/products" in response.url
@@ -246,7 +246,7 @@ def _discover_products_from_payload(
 
 def _ensure_category_exists(
     category_repository: CategoryRepository,
-    settings: Settings,
+    settings: ScraperSettings,
     category_id: str,
     *,
     is_leaf: bool = True,
@@ -267,7 +267,7 @@ def _ensure_category_exists(
 
 
 def _category_from_id(
-    settings: Settings,
+    settings: ScraperSettings,
     category_id: str,
     *,
     is_leaf: bool,

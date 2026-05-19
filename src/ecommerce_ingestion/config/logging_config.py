@@ -1,10 +1,10 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from ecommerce_ingestion.config.settings import Settings
+from ecommerce_ingestion.config.settings import LogSettings
 
 
-def configure_logging(settings: Settings) -> None:
+def configure_logging(settings: LogSettings) -> None:
     settings.log_file_path.parent.mkdir(parents=True, exist_ok=True)
     root_logger = logging.getLogger()
     root_logger.handlers.clear()

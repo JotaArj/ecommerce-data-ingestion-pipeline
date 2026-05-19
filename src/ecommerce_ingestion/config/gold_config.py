@@ -17,7 +17,24 @@ GOLD_GAME_DATA_COLUMN_LIST = [
     "game_developer",
     "game_rating",
     "game_product_type",
-    "genre_id",
+    "genres",
+    "current_price",
+    "currency",
+    "stock_status",
+    "meta_score",
+    "user_score",
+    "category_name",
+    "category_parent_id",
+    "primary_genre",
+    "secondary_genre"]
+
+GOLD_PRODUCT_COLUMNS_REQUIRED = [
+    "game_id",
+    "game_name",
+    "game_developer",
+    "game_rating",
+    "game_product_type",
+    "genres",
     "current_price",
     "currency",
     "stock_status",
@@ -27,41 +44,19 @@ GOLD_GAME_DATA_COLUMN_LIST = [
     "category_parent_id",
     "primary_genre",
     "secondary_genre",
-    "tertiary_genre"]
-
-GOLD_PRODUCT_COLUMNS_REQUIRED = [
-    "game_id",
-    "game_source_site",
-    "source_game_product_code",
-    "game_name",
-    "game_product_type",
-    "game_rating",
-    "game_pdp_url",
-    "game_developer",
-    "game_description",
-    "genres",
-    "category_id",
-    "category_source_site",
-    "source_category_code",
-    "category_name",
-    "category_url",
-    "category_path",
-    "category_parent_id",
-    "category_level",
-    "category_is_leaf",
-    "current_price",
-    "currency",
-    "stock_status",
-    "meta_score",
-    "user_score",
+    "price_bucket",
+    "score_bucket"
 ]
 
 GOLD_PRODUCT_CRITICAL_COLUMNS = [
     "game_id",
     "game_name",
-    "category_id",
+    "primary_genre",
     "current_price",
+    "meta_score",
+    "user_score",
     "stock_status",
+    "category_name"
 ]
 
 DEFAULT_UNKNOWN_RATIO_THRESHOLD = 0.5
@@ -80,7 +75,7 @@ GOLD_PRODUCT_VALIDATION_CONFIG: ValidationConfig = {
 }
 
 GOLD_GENRE_DATA_COLUMN_LIST = [
-    "game_id",
+    "genre_id",
     "mapped_genre",
     "priority"
 ]
@@ -98,5 +93,5 @@ GOLD_GENRE_VALIDATION_CONFIG: ValidationConfig = {
 
 GOLD_VALIDATION_CONFIG: dict[str, ValidationConfig]= {
     GOLD_PRODUCT_FILENAME : GOLD_PRODUCT_VALIDATION_CONFIG,
-    GOLD_GENRE_FILENAME : GOLD_PRODUCT_VALIDATION_CONFIG
+    GOLD_GENRE_FILENAME : GOLD_GENRE_VALIDATION_CONFIG
 }

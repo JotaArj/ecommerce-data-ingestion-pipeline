@@ -13,8 +13,8 @@ from ecommerce_ingestion.processing.silver.build_silver_products import (
 logger = logging.getLogger(__name__)
 
 
-def run_silver() -> None:
-    settings = load_log_settings("silver")
+def run_silver(run_name: str | None = None) -> None:
+    settings = load_log_settings("silver", run_name)
     configure_logging(settings)
 
     logger.info("Starting silver data processing.")

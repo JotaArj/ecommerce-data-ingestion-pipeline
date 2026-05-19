@@ -11,11 +11,11 @@ from playwright.sync_api import (
     sync_playwright,
 )
 
-from ecommerce_ingestion.config.settings import Settings
+from ecommerce_ingestion.config.settings import ScraperSettings
 
 
 class PlaywrightFactory:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: ScraperSettings) -> None:
         self._settings = settings
         self._playwright: Playwright | None = None
         self._browser: Browser | None = None

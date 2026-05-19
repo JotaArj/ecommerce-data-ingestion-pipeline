@@ -18,7 +18,7 @@ from ecommerce_ingestion.validation.validation_runner import run_validations
 logger = logging.getLogger(__name__)
 class GoldGameCatalogBuilder:
     def build(self, data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame:
-        logger.info("Starting to build silver products dataset.")
+        logger.info(f"Starting build {GOLD_PRODUCT_FILENAME}.")
 
         data_genre = data_dict["game_genre_game_link"].merge(
             data_dict["game_genre_extension"],
@@ -27,7 +27,7 @@ class GoldGameCatalogBuilder:
             how="left"
         )
 
-        data_genre = data_genre.drop_duplicates(["genre_id", "mapped_genre"])
+        data_genre = data_genre.drop_duplicates(["game_id", "mapped_genre"])
         
         data_genre = data_genre.sort_values(["game_id", "priority"])
         data_genre["genre_rank"] = (
@@ -36,7 +36,7 @@ class GoldGameCatalogBuilder:
             .cumcount() + 1
         )
 
-        data_genre = data_genre[data_genre["genre_rank"] <= 3]
+        data_genre = data_genre[data_genre["genre_rank"] <= 2]
         data_genre = (
             data_genre
             .pivot(
@@ -46,8 +46,7 @@ class GoldGameCatalogBuilder:
             )
             .rename(columns={
                 1: "primary_genre",
-                2: "secondary_genre",
-                3: "tertiary_genre"
+                2: "secondary_genre"
             })
             .reset_index()
         )
@@ -57,8 +56,6 @@ class GoldGameCatalogBuilder:
             data_genre,
             on="game_id", 
             how="left")
-        
-        save_table("gold_all_columns_game_catalog.parquet", gold_game_catalog, GOLD_DIR)
 
         gold_game_catalog = gold_game_catalog[GOLD_GAME_DATA_COLUMN_LIST]
         gold_game_catalog["price_bucket"] = (

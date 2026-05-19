@@ -5,7 +5,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from ecommerce_ingestion.config.settings import Settings
+from ecommerce_ingestion.config.settings import ScraperSettings
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 
@@ -49,5 +49,5 @@ class SQLiteDatabase:
             pass
 
 
-def build_database(settings: Settings) -> SQLiteDatabase:
+def build_database(settings: ScraperSettings) -> SQLiteDatabase:
     return SQLiteDatabase(db_path=settings.db_path)

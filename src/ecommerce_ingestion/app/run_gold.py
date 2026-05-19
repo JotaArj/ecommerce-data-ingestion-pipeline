@@ -15,8 +15,8 @@ from ecommerce_ingestion.utils.parquet_file_service import load_dict_table
 logger = logging.getLogger(__name__)
 
 
-def run_gold() -> None:
-    settings = load_log_settings("gold")
+def run_gold(run_name: str | None = None) -> None:
+    settings = load_log_settings("gold", run_name)
     configure_logging(settings)
     game_catalog_builder = GoldGameCatalogBuilder()
     genre_extension_builder = GenreExtensionTable()
